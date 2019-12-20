@@ -1,6 +1,46 @@
 use crate::component::Component;
 use crate::event::Event;
 
+pub enum Orientation {
+    VERTICAL,
+    HORIZONTAL,
+}
+
+pub struct Splitter {
+    orientation: Orientation,
+    gutter_size: u8,
+    first: Box<dyn Component>,
+    second: Box<dyn Component>,
+}
+
+impl Splitter {
+    pub fn new(orientation: Orientation, first: impl Component + 'static, second: impl Component + 'static) -> Splitter {
+        Splitter {
+            orientation,
+            gutter_size: 4,
+            first: Box::new(first),
+            second : Box::new(second),
+        }
+    }
+}
+
+impl Component for Splitter {
+    fn render(&self) -> String {
+        format!(r#"<div data-role="splitter" class="h-100">
+                      <div>{first}</div>
+                      <div>{second}</div>
+                   </div>"#,
+                    first=self.first.render(),
+                    second=self.second.render())
+    }
+
+    fn handle_event(&mut self, event: &Event) {
+        self.first.handle_event(event);
+        self.second.handle_event(event);
+    }
+}
+
+
 pub struct Form {
     components: Vec<Box<dyn Component>>,
 }
