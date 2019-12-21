@@ -1,5 +1,8 @@
 
+function fire_clicked(id) {
+    window.external.invoke("{\"id\":\""+id+"\",\"value\":\"Clicked\"}");
+}
 
-function fire_click(id) {
-    window.external.invoke("{\"id\":\""+id+"\",\"value\":\"Click\"}");
+function fire_value_changed(id) {
+    window.external.invoke("{\"id\":\""+id+"\",\"value\":{\"ValueChanged\":\""+$("#"+id).val()+"\"}}");
 }

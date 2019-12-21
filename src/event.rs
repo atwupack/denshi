@@ -2,7 +2,8 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum EventValue {
-    Click,
+    Clicked,
+    ValueChanged(String),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -17,10 +18,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_click() {
+    fn test_clicked() {
         let event = Event {
             id: "1234".into(),
-            value: EventValue::Click,
+            value: EventValue::Clicked,
         };
 
         dbg!(&event);
@@ -28,5 +29,16 @@ mod tests {
         dbg!(serde_json::to_string(&event).unwrap());
     }
 
+    #[test]
+    fn test_value_changed() {
+        let event = Event {
+            id: "1234".into(),
+            value: EventValue::ValueChanged("Test".to_string()),
+        };
+
+        dbg!(&event);
+
+        dbg!(serde_json::to_string(&event).unwrap());
+    }
 
 }

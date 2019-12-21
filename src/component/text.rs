@@ -18,10 +18,12 @@ impl TextField {
 
 impl Component for TextField {
     fn render(&self) -> String {
-        format!(r#"<input id="{id}" type="text" data-role="input" data-prepend="{label}"/>"#, id=self.id, label=self.label)
+        format!(r#"<input id="{id}"  oninput="fire_value_changed('{id}')" data-on-clear-click="fire_value_changed('{id}')" type="text" data-role="input" data-prepend="{label}"/>"#, id=self.id, label=self.label)
     }
 
     fn handle_event(&mut self, event: &Event) {
-        // do nothing
+        if event.id == self.id {
+            dbg!(event);
+        }
     }
 }
