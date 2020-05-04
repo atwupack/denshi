@@ -40,9 +40,40 @@ impl Component for Splitter {
     }
 }
 
+pub struct Page {
+    components: Vec<Box<dyn Component>>,
+}
+
+impl Page {
+    pub fn new() -> Self {
+        Page {
+            components: Vec::new(),
+        }
+    }
+
+    pub fn add_component(&mut self, component: impl Component + 'static) {
+        self.components.push(Box::new(component));
+    }
+}
 
 pub struct Form {
     components: Vec<Box<dyn Component>>,
+}
+
+impl Component for Page {
+    fn render(&self) -> String {
+        let mut components = String::new();
+        for comp in &self.components {
+            components.push_str(comp.render().as_str());
+        }
+        format!("{components}", components=components)
+    }
+
+    fn handle_event(&mut self, event: &Event) {
+        for comp in &mut self.components {
+            comp.handle_event(event);
+        }
+    }
 }
 
 impl Form {

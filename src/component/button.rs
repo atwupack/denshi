@@ -24,7 +24,8 @@ impl Button {
 
 impl Component for Button {
     fn render(&self) -> String {
-        format!(r#"<button id="{id}" class="button" onclick="fire_clicked('{id}')">{label}</button>"#, id=self.id, label=self.label)
+        //format!(r#"<button id="{id}" class="button" onclick="fire_clicked('{id}')">{label}</button>"#, id=self.id, label=self.label)
+        format!(r#"<a id="{id}" class="button" onclick="fire_clicked('{id}')">{label}</a>"#, id=self.id, label=self.label)
     }
 
     fn handle_event(&mut self, event: &Event) {
