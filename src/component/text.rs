@@ -26,4 +26,8 @@ impl Component for TextField {
             dbg!(event);
         }
     }
+
+    fn id(&self) -> &str {
+        &*self.id
+    }
 }

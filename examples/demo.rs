@@ -1,5 +1,5 @@
 use denshi::App;
-use denshi::component::button::Button;
+use denshi::component::button::{Button, Checkbox};
 use denshi::component::text::TextField;
 use denshi::component::layout::{Form, Page};
 use denshi::component::menu::MenuBar;
@@ -27,9 +27,12 @@ fn main() {
     });
     let text = TextField::new("Enter Name: ".to_owned());
 
+    let checkbox = Checkbox::new("Checkbox".to_owned());
+
     //form.add_line(menu);
     form.add_line(text);
     form.add_line(button);
+    form.add_line(checkbox);
 
     let mut page = Page::new();
     page.add_component(menu);

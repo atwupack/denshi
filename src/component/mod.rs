@@ -8,4 +8,5 @@ pub mod menu;
 pub trait Component {
     fn render(&self) -> String;
     fn handle_event(&mut self, event: &Event);
+    fn id(&self) -> &str;
 }

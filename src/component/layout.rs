@@ -1,5 +1,6 @@
 use crate::component::Component;
 use crate::event::Event;
+use uuid::Uuid;
 
 pub enum Orientation {
     VERTICAL,
@@ -7,6 +8,7 @@ pub enum Orientation {
 }
 
 pub struct Splitter {
+    id: String,
     orientation: Orientation,
     gutter_size: u8,
     first: Box<dyn Component>,
@@ -16,6 +18,7 @@ pub struct Splitter {
 impl Splitter {
     pub fn new(orientation: Orientation, first: impl Component + 'static, second: impl Component + 'static) -> Splitter {
         Splitter {
+            id: Uuid::new_v4().to_string(),
             orientation,
             gutter_size: 4,
             first: Box::new(first),
@@ -38,15 +41,21 @@ impl Component for Splitter {
         self.first.handle_event(event);
         self.second.handle_event(event);
     }
+
+    fn id(&self) -> &str {
+        &*self.id
+    }
 }
 
 pub struct Page {
+    id: String,
     components: Vec<Box<dyn Component>>,
 }
 
 impl Page {
     pub fn new() -> Self {
         Page {
+            id: Uuid::new_v4().to_string(),
             components: Vec::new(),
         }
     }
@@ -54,10 +63,6 @@ impl Page {
     pub fn add_component(&mut self, component: impl Component + 'static) {
         self.components.push(Box::new(component));
     }
-}
-
-pub struct Form {
-    components: Vec<Box<dyn Component>>,
 }
 
 impl Component for Page {
@@ -74,11 +79,21 @@ impl Component for Page {
             comp.handle_event(event);
         }
     }
+
+    fn id(&self) -> &str {
+        &*self.id
+    }
+}
+
+pub struct Form {
+    id: String,
+    components: Vec<Box<dyn Component>>,
 }
 
 impl Form {
     pub fn new() -> Self {
         Form {
+            id: Uuid::new_v4().to_string(),
             components: Vec::new(),
         }
     }
@@ -105,5 +120,9 @@ impl Component for Form {
         for comp in &mut self.components {
             comp.handle_event(event);
         }
+    }
+
+    fn id(&self) -> &str {
+        &*self.id
     }
 }

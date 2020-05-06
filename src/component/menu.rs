@@ -43,6 +43,10 @@ impl Component for MenuBar {
     fn handle_event(&mut self, event: &Event) {
 
     }
+
+    fn id(&self) -> &str {
+        &*self.id
+    }
 }
 
 pub struct Menu {

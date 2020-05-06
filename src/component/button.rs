@@ -24,7 +24,6 @@ impl Button {
 
 impl Component for Button {
     fn render(&self) -> String {
-        //format!(r#"<button id="{id}" class="button" onclick="fire_clicked('{id}')">{label}</button>"#, id=self.id, label=self.label)
         format!(r#"<a id="{id}" class="button" onclick="fire_clicked('{id}')">{label}</a>"#, id=self.id, label=self.label)
     }
 
@@ -35,5 +34,41 @@ impl Component for Button {
                 None => ()
             }
         }
+    }
+
+    fn id(&self) -> &str {
+        &*self.id
+    }
+}
+
+pub struct Checkbox {
+    id: String,
+    label: String,
+    checked: bool,
+}
+
+impl Checkbox {
+    pub fn new(label: String) -> Self {
+        Checkbox {
+            id: Uuid::new_v4().to_string(),
+            label,
+            checked: false,
+        }
+    }
+}
+
+impl Component for Checkbox {
+    fn render(&self) -> String {
+        format!(r#"<input id="{id}" type="checkbox" data-role="checkbox" data-caption="{label}" />"#, id=self.id, label=self.label)
+    }
+
+    fn handle_event(&mut self, event: &Event) {
+        if event.id == self.id {
+            dbg!("Clicked");
+        }
+    }
+
+    fn id(&self) -> &str {
+        &*self.id
     }
 }
