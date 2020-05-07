@@ -10,7 +10,7 @@ pub struct TextField {
 impl TextField {
     pub fn new(label: String) -> Self {
         TextField {
-            id: Uuid::new_v4().to_string(),
+            id: format!("id{id}",id=Uuid::new_v4()),
             label,
         }
     }

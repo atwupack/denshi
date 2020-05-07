@@ -15,7 +15,7 @@ pub struct MenuBar {
 impl MenuBar {
     pub fn new() -> Self {
         MenuBar {
-            id: Uuid::new_v4().to_string(),
+            id: format!("id{id}",id=Uuid::new_v4()),
             entries: Vec::new(),
         }
     }

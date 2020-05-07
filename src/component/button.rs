@@ -11,7 +11,7 @@ pub struct Button {
 impl Button {
     pub fn new(label: String) -> Button {
         Button {
-            id: Uuid::new_v4().to_string(),
+            id: format!("id{id}",id=Uuid::new_v4()),
             label,
             click_event: None,
         }
@@ -50,7 +50,7 @@ pub struct Checkbox {
 impl Checkbox {
     pub fn new(label: String) -> Self {
         Checkbox {
-            id: Uuid::new_v4().to_string(),
+            id: format!("id{id}",id=Uuid::new_v4()),
             label,
             checked: false,
         }

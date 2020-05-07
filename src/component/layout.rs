@@ -18,7 +18,7 @@ pub struct Splitter {
 impl Splitter {
     pub fn new(orientation: Orientation, first: impl Component + 'static, second: impl Component + 'static) -> Splitter {
         Splitter {
-            id: Uuid::new_v4().to_string(),
+            id: format!("id{id}",id=Uuid::new_v4()),
             orientation,
             gutter_size: 4,
             first: Box::new(first),
@@ -56,7 +56,7 @@ pub struct Page {
 impl Page {
     pub fn new() -> Self {
         Page {
-            id: Uuid::new_v4().to_string(),
+            id: format!("id{id}",id=Uuid::new_v4()),
             components: Vec::new(),
         }
     }
@@ -94,7 +94,7 @@ pub struct Form {
 impl Form {
     pub fn new() -> Self {
         Form {
-            id: Uuid::new_v4().to_string(),
+            id: format!("id{id}",id=Uuid::new_v4()),
             components: Vec::new(),
         }
     }
