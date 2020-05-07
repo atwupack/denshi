@@ -1,7 +1,7 @@
 use denshi::App;
 use denshi::component::button::{Button, Checkbox};
 use denshi::component::text::TextField;
-use denshi::component::layout::{Form, Page};
+use denshi::component::layout::{Form, Page, TabPane, Splitter, Orientation};
 use denshi::component::menu::MenuBar;
 
 struct DemoState {
@@ -14,13 +14,17 @@ fn main() {
         text: "".to_string(),
     };
 
-    let mut form = Form::new();
-
+    // create menu
     let mut menu = MenuBar::new();
     menu.add_entry("File".to_string());
     menu.add_entry("Edit".to_string());
     menu.add_entry("Help".to_string());
 
+    // create tab pane
+    let mut tabs = TabPane::new();
+
+    // first tab
+    let mut form = Form::new();
     let mut button = Button::new("Test Button".to_owned());
     button.set_click_event(|| {
        dbg!("Clicked");
@@ -34,9 +38,15 @@ fn main() {
     form.add_line(button);
     form.add_line(checkbox);
 
+    tabs.add_tab("Form".to_string(), form);
+
+    // second tab
+    let split = Splitter::new(Orientation::HORIZONTAL, Page::new(), Page::new());
+    tabs.add_tab("Splitter".to_string(), split);
+
     let mut page = Page::new();
     page.add_component(menu);
-    page.add_component(form);
+    page.add_component(tabs);
 
     let app = App::new("Demo".to_owned(), page);
     app.run();

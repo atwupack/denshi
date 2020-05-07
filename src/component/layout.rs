@@ -29,10 +29,11 @@ impl Splitter {
 
 impl Component for Splitter {
     fn render(&self) -> String {
-        format!(r#"<div data-role="splitter" class="h-100">
+        format!(r#"<div id="{id}" data-role="splitter" class="h-100">
                       <div>{first}</div>
                       <div>{second}</div>
                    </div>"#,
+                    id=self.id,
                     first=self.first.render(),
                     second=self.second.render())
     }
@@ -113,12 +114,72 @@ impl Form {
 
 impl Component for Form {
     fn render(&self) -> String {
-        format!("<form>{lines}</form>", lines=self.render_lines())
+        format!("<form id=\"{id}\">{lines}</form>", id=self.id, lines=self.render_lines())
     }
 
     fn handle_event(&mut self, event: &Event) {
         for comp in &mut self.components {
             comp.handle_event(event);
+        }
+    }
+
+    fn id(&self) -> &str {
+        &*self.id
+    }
+}
+
+pub struct TabPane {
+    id: String,
+    tabs: Vec<Tab>,
+}
+
+struct Tab {
+    label: String,
+    content: Box<dyn Component>,
+}
+
+impl TabPane {
+    pub fn new() -> Self {
+        TabPane {
+            id: Uuid::new_v4().to_string(),
+            tabs: Vec::new(),
+        }
+    }
+
+    pub fn add_tab(&mut self, label: String, content: impl Component + 'static) {
+        self.tabs.push(Tab {
+           label,
+            content: Box::new(content),
+        });
+    }
+
+    fn render_tab_headers(&self) -> String {
+        let mut tabs = String::new();
+        for tab in &self.tabs {
+            tabs.push_str(format!("<li><a href=\"#{id}\">{label}</a></li>", id=tab.content.id(), label=tab.label).as_str());
+        }
+        tabs
+    }
+
+    fn render_tab_content(&self) -> String {
+        let mut tabs = String::new();
+        tabs.push_str("<div>");
+        for tab in &self.tabs {
+            tabs.push_str(tab.content.render().as_str());
+        }
+        tabs.push_str("</div>");
+        tabs
+    }
+}
+
+impl Component for TabPane {
+    fn render(&self) -> String {
+        format!(r#"<ul data-role="tabs" data-expand="true">{tabs}</ul>{content}"#, tabs=self.render_tab_headers(), content=self.render_tab_content())
+    }
+
+    fn handle_event(&mut self, event: &Event) {
+        for tab in &mut self.tabs {
+            tab.content.handle_event(event);
         }
     }
 

@@ -27,6 +27,8 @@ impl App {
                             metrocss = include_str!("www/css/metro-all.min.css"),
                             content = self.content.render());
 
+        println!("{}", html);
+
         let ref title = self.title.clone();
 
         web_view::builder()
