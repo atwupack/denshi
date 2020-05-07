@@ -25,6 +25,7 @@ impl App {
                             eventjs = include_str!("www/js/event.js"),
                             metrojs = include_str!("www/js/metro.min.js"),
                             metrocss = include_str!("www/css/metro-all.min.css"),
+                            denshicss = include_str!("www/css/denshi.css"),
                             content = self.content.render());
 
         println!("{}", html);
