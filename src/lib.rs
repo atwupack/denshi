@@ -1,9 +1,22 @@
 use web_view::Content;
 use crate::component::Component;
 use crate::event::Event;
+use std::fs::{File, remove_file};
+use std::io::Write;
+
 
 pub mod component;
 pub mod event;
+
+#[cfg(debug_assertions)]
+const METRO_JS: &str = include_str!("www/js/metro.js");
+#[cfg(not(debug_assertions))]
+const METRO_JS: &str = include_str!("www/js/metro.min.js");
+#[cfg(debug_assertions)]
+const METRO_CSS: &str = include_str!("www/css/metro-all.css");
+#[cfg(not(debug_assertions))]
+const METRO_CSS: &str = include_str!("www/css/metro-all.min.css");
+
 
 pub struct App {
     title: String,
@@ -23,12 +36,16 @@ impl App {
 
         let html = format!(include_str!("www/html/app.html"),
                             eventjs = include_str!("www/js/event.js"),
-                            metrojs = include_str!("www/js/metro.min.js"),
-                            metrocss = include_str!("www/css/metro-all.min.css"),
+                            metrojs = METRO_JS,
+                            metrocss = METRO_CSS,
                             denshicss = include_str!("www/css/denshi.css"),
                             content = self.content.render());
 
-        println!("{}", html);
+        if cfg!(debug_assertions) {
+            remove_file("test.html");
+            let mut file = File::create("test.html").unwrap();
+            file.write_all(html.as_bytes());
+        }
 
         let ref title = self.title.clone();
 
