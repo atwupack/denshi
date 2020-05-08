@@ -2,6 +2,44 @@ use crate::component::Component;
 use crate::event::Event;
 use uuid::Uuid;
 
+
+pub struct BorderLayout {
+    id: String,
+    top: Option<Box<dyn Component>>,
+    bottom: Option<Box<dyn Component>>,
+    center: Option<Box<dyn Component>>,
+    left: Option<Box<dyn Component>>,
+    right: Option<Box<dyn Component>>,
+}
+
+impl BorderLayout {
+    pub fn new() -> Self {
+        BorderLayout {
+            id: format!("id{id}",id=Uuid::new_v4()),
+            top: None,
+            bottom: None,
+            center: None,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+impl Component for BorderLayout {
+    fn render(&self) -> String {
+        unimplemented!()
+    }
+
+    fn handle_event(&mut self, event: &Event) {
+        unimplemented!()
+    }
+
+    fn id(&self) -> &str {
+        &*self.id
+    }
+}
+
+
 pub enum Orientation {
     VERTICAL,
     HORIZONTAL,
