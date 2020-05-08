@@ -29,9 +29,9 @@ impl Splitter {
 
 impl Component for Splitter {
     fn render(&self) -> String {
-        format!(r#"<div id="{id}" data-role="splitter" class="h-100">
-                      <div>{first}</div>
-                      <div>{second}</div>
+        format!(r#"<div id="{id}" data-role="splitter" class="h-100" data-split-mode="vertical">
+                      <div class"d-flex">{first}</div>
+                      <div class="d-flex">{second}</div>
                    </div>"#,
                     id=self.id,
                     first=self.first.render(),
@@ -163,7 +163,7 @@ impl TabPane {
 
     fn render_tab_content(&self) -> String {
         let mut tabs = String::new();
-        tabs.push_str("<div>");
+        tabs.push_str("<div class=\"border bd-default no-border-top p-2 h-100\">");
         for tab in &self.tabs {
             tabs.push_str(tab.content.render().as_str());
         }

@@ -3,6 +3,7 @@ use denshi::component::button::{Button, Checkbox};
 use denshi::component::text::TextField;
 use denshi::component::layout::{Form, Page, TabPane, Splitter, Orientation};
 use denshi::component::menu::MenuBar;
+use denshi::component::panel::Panel;
 
 struct DemoState {
     text: String,
@@ -41,7 +42,13 @@ fn main() {
     tabs.add_tab("Form".to_string(), form);
 
     // second tab
-    let split = Splitter::new(Orientation::HORIZONTAL, Page::new(), Page::new());
+    let mut left = Panel::new();
+    left.set_title("Left".to_string());
+
+    let mut right = Panel::new();
+    right.set_title("Right".to_string());
+
+    let split = Splitter::new(Orientation::HORIZONTAL, left, right);
     tabs.add_tab("Splitter".to_string(), split);
 
     let mut page = Page::new();
