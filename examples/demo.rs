@@ -4,6 +4,7 @@ use denshi::component::text::TextField;
 use denshi::component::layout::{Form, Page, TabPane, Splitter, Orientation};
 use denshi::component::menu::MenuBar;
 use denshi::component::panel::Panel;
+use denshi::component::tree::Tree;
 
 struct DemoState {
     text: String,
@@ -51,9 +52,17 @@ fn main() {
     let split = Splitter::new(Orientation::HORIZONTAL, left, right);
     tabs.add_tab("Splitter".to_string(), split);
 
+    // create tree
+    let tree = Tree::new();
+
+    // create split pane
+    let main_split = Splitter::new(Orientation::HORIZONTAL, tree, tabs);
+
+
+
     let mut page = Page::new();
     page.add_component(menu);
-    page.add_component(tabs);
+    page.add_component(main_split);
 
     let app = App::new("Demo".to_owned(), page);
     app.run();

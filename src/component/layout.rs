@@ -67,13 +67,20 @@ impl Splitter {
 
 impl Component for Splitter {
     fn render(&self) -> String {
-        format!(r#"<div id="{id}" data-role="splitter" class="h-100" data-split-mode="vertical">
-                      <div class"d-flex">{first}</div>
-                      <div class="d-flex">{second}</div>
+
+        let split_mode = match self.orientation {
+            Orientation::HORIZONTAL => "data-split-mode=\"horizontal\"",
+            Orientation::VERTICAL => "data-split-mode=\"vertical\"",
+        };
+
+        format!(r#"<div id="{id}" data-role="splitter" class="h-100" {split_mode}>
+                      <div class="d-flex flex-justify-center flex-align-center">{first}</div>
+                      <div class="d-flex flex-justify-center flex-align-center">{second}</div>
                    </div>"#,
                     id=self.id,
                     first=self.first.render(),
-                    second=self.second.render())
+                    second=self.second.render(),
+                    split_mode=split_mode)
     }
 
     fn handle_event(&mut self, event: &Event) {

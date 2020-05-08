@@ -4,6 +4,7 @@ use serde::{Serialize, Deserialize};
 pub enum EventValue {
     Clicked,
     ValueChanged(String),
+    Created,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

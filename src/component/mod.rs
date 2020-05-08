@@ -5,6 +5,7 @@ pub mod text;
 pub mod layout;
 pub mod menu;
 pub mod panel;
+pub mod tree;
 
 pub trait Component {
     fn render(&self) -> String;
