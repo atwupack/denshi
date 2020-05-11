@@ -79,8 +79,8 @@ fn main() {
 
 
     let mut page = Page::new();
-    page.add_component(menu);
-    page.add_component(main_split);
+    page.set_header(menu);
+    page.set_content(main_split);
 
     let app = App::new("Demo".to_owned(), page);
     app.run();

@@ -95,34 +95,65 @@ impl Component for Splitter {
 
 pub struct Page {
     id: String,
-    components: Vec<Box<dyn Component>>,
+    header: Option<Box<dyn Component>>,
+    content: Option<Box<dyn Component>>,
+    footer: Option<Box<dyn Component>>,
 }
 
 impl Page {
     pub fn new() -> Self {
         Page {
             id: format!("id{id}",id=Uuid::new_v4()),
-            components: Vec::new(),
+            header: None,
+            content: None,
+            footer: None,
         }
     }
 
-    pub fn add_component(&mut self, component: impl Component + 'static) {
-        self.components.push(Box::new(component));
+    pub fn set_content(&mut self, content: impl Component + 'static) {
+        self.content = Some(Box::new(content))
     }
+
+    pub fn set_header(&mut self, header: impl Component + 'static) {
+        self.header = Some(Box::new(header))
+    }
+
+    pub fn set_footer(&mut self, footer: impl Component + 'static) {
+        self.header = Some(Box::new(footer))
+    }
+
 }
 
 impl Component for Page {
     fn render(&self) -> String {
         let mut components = String::new();
-        for comp in &self.components {
-            components.push_str(comp.render().as_str());
+        components.push_str("<div class=\"noselect h-100 container-fluid d-flex flex-column flex-align-stretch\">");
+
+        if self.header.is_some() {
+            components.push_str(&format!("<header>{header}</header>", header=self.header.as_ref().unwrap().render()));
         }
-        format!("{components}", components=components)
+
+        if self.content.is_some() {
+            components.push_str(&format!("<div class=\"h-100\">{content}</div>", content=self.content.as_ref().unwrap().render()));
+        }
+
+        if self.footer.is_some() {
+            components.push_str(&format!("<footer>{footer}</footer>", footer=self.footer.as_ref().unwrap().render()));
+        }
+
+        components.push_str("</div>");
+        components
     }
 
     fn handle_event(&mut self, event: &Event) {
-        for comp in &mut self.components {
-            comp.handle_event(event);
+        if self.header.is_some() {
+            self.header.as_mut().unwrap().handle_event(event);
+        }
+        if self.content.is_some() {
+            self.content.as_mut().unwrap().handle_event(event);
+        }
+        if self.footer.is_some() {
+            self.footer.as_mut().unwrap().handle_event(event);
         }
     }
 
