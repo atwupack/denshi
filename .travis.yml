@@ -1,7 +1,5 @@
 language: rust
 rust:
   - stable
-  - beta
-  - nightly
 before_install:
   - sudo apt-get -y install libpango-dev
