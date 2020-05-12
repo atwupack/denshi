@@ -1,6 +1,6 @@
-use uuid::Uuid;
 use crate::component::Component;
 use crate::event::Event;
+use crate::utils::create_id;
 
 pub struct TextArea {
     id: String,
@@ -9,7 +9,7 @@ pub struct TextArea {
 impl TextArea {
     pub fn new() -> Self {
         TextArea {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
         }
     }
 }
@@ -38,7 +38,7 @@ pub struct TextField {
 impl TextField {
     pub fn new(label: impl Into<String>) -> Self {
         TextField {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             label: label.into(),
         }
     }

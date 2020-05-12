@@ -1,6 +1,6 @@
 use crate::component::Component;
-use uuid::Uuid;
 use crate::event::Event;
+use crate::utils::create_id;
 
 pub struct Button {
     id: String,
@@ -11,7 +11,7 @@ pub struct Button {
 impl Button {
     pub fn new(label: impl Into<String>) -> Button {
         Button {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             label: label.into(),
             click_event: None,
         }
@@ -50,7 +50,7 @@ pub struct Checkbox {
 impl Checkbox {
     pub fn new(label: impl Into<String>) -> Self {
         Checkbox {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             label: label.into(),
             checked: false,
         }

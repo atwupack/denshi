@@ -1,6 +1,6 @@
-use uuid::Uuid;
 use crate::component::Component;
 use crate::event::Event;
+use crate::utils::create_id;
 
 pub struct TreeNode {
     caption: String,
@@ -46,7 +46,7 @@ pub struct Tree {
 impl Tree {
     pub fn new() -> Self {
         Tree {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             roots: Vec::new(),
         }
     }
@@ -69,7 +69,7 @@ impl Component for Tree {
         format!(r#"<ul id="{id}" data-role="treeview">{roots}</ul>"#, id=self.id, roots = self.render_roots())
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, _event: &Event) {
         println!("Tree created");
     }
 

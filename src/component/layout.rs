@@ -1,6 +1,6 @@
 use crate::component::Component;
 use crate::event::Event;
-use uuid::Uuid;
+use crate::utils::create_id;
 
 
 pub struct BorderLayout {
@@ -15,7 +15,7 @@ pub struct BorderLayout {
 impl BorderLayout {
     pub fn new() -> Self {
         BorderLayout {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             top: None,
             bottom: None,
             center: None,
@@ -30,7 +30,7 @@ impl Component for BorderLayout {
         unimplemented!()
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, _event: &Event) {
         unimplemented!()
     }
 
@@ -56,12 +56,16 @@ pub struct Splitter {
 impl Splitter {
     pub fn new(orientation: Orientation, first: impl Component + 'static, second: impl Component + 'static) -> Splitter {
         Splitter {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             orientation,
             gutter_size: 4,
             first: Box::new(first),
             second : Box::new(second),
         }
+    }
+
+    pub fn set_gutter_size(&mut self, new_size: u8) {
+        self.gutter_size = new_size
     }
 }
 
@@ -73,14 +77,15 @@ impl Component for Splitter {
             Orientation::VERTICAL => "data-split-mode=\"vertical\"",
         };
 
-        format!(r#"<div id="{id}" data-role="splitter" class="h-100" {split_mode}>
+        format!(r#"<div id="{id}" data-gutter-size="{gutter}" data-role="splitter" class="h-100" {split_mode}>
                       <div class="d-flex flex-justify-start flex-align-start">{first}</div>
                       <div class="d-flex flex-column flex-justify-start flex-align-start">{second}</div>
                    </div>"#,
                     id=self.id,
                     first=self.first.render(),
                     second=self.second.render(),
-                    split_mode=split_mode)
+                    split_mode=split_mode,
+                    gutter=self.gutter_size)
     }
 
     fn handle_event(&mut self, event: &Event) {
@@ -103,7 +108,7 @@ pub struct Page {
 impl Page {
     pub fn new() -> Self {
         Page {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             header: None,
             content: None,
             footer: None,
@@ -170,7 +175,7 @@ pub struct Form {
 impl Form {
     pub fn new() -> Self {
         Form {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             components: Vec::new(),
         }
     }
@@ -217,7 +222,7 @@ struct Tab {
 impl TabPane {
     pub fn new() -> Self {
         TabPane {
-            id: Uuid::new_v4().to_string(),
+            id: create_id(),
             tabs: Vec::new(),
         }
     }

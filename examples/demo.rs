@@ -5,10 +5,8 @@ use denshi::component::layout::{Form, Page, TabPane, Splitter, Orientation};
 use denshi::component::menu::MenuBar;
 use denshi::component::panel::Panel;
 use denshi::component::tree::{Tree, TreeNode};
+use std::error::Error;
 
-struct DemoState {
-    text: String,
-}
 
 fn build_tree() -> Tree {
     let mut tree = Tree::new();
@@ -28,11 +26,7 @@ fn build_tree() -> Tree {
     tree
 }
 
-fn main() {
-
-    let state = DemoState {
-        text: "".to_string(),
-    };
+fn main() -> Result<(), Box<dyn Error>>{
 
     // create menu
     let mut menu = MenuBar::new();
@@ -77,12 +71,13 @@ fn main() {
     let tree = build_tree();
 
     // create split pane
-    let main_split = Splitter::new(Orientation::HORIZONTAL, tree, tabs);
+    let mut main_split = Splitter::new(Orientation::HORIZONTAL, tree, tabs);
+    main_split.set_gutter_size(10);
 
     let mut page = Page::new();
     page.set_header(menu);
     page.set_content(main_split);
 
     let app = App::new("Demo", page);
-    app.run();
+    app.run()
 }

@@ -1,7 +1,7 @@
-use uuid::Uuid;
 use crate::component::Component;
 use crate::event::Event;
 use crate::component::menu::MenuItem::Entry;
+use crate::utils::create_id;
 
 enum MenuItem {
     Entry(String),
@@ -15,7 +15,7 @@ pub struct MenuBar {
 impl MenuBar {
     pub fn new() -> Self {
         MenuBar {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             entries: Vec::new(),
         }
     }
@@ -40,7 +40,7 @@ impl Component for MenuBar {
         format!(r#"<ul class="h-menu">{items}</ul>"#, items=self.render_items())
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, _event: &Event) {
 
     }
 

@@ -1,6 +1,6 @@
 use crate::component::Component;
 use crate::event::Event;
-use uuid::Uuid;
+use crate::utils::create_id;
 
 pub struct Panel {
     id: String,
@@ -12,7 +12,7 @@ pub struct Panel {
 impl Panel {
     pub fn new() -> Self {
         Panel {
-            id: format!("id{id}",id=Uuid::new_v4()),
+            id: create_id(),
             components: Vec::new(),
             title: None,
             collapsible: false,
@@ -43,7 +43,7 @@ impl Component for Panel {
                 collapsible=self.collapsible)
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, _event: &Event) {
 
     }
 
