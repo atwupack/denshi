@@ -9,10 +9,10 @@ pub struct Button {
 }
 
 impl Button {
-    pub fn new(label: String) -> Button {
+    pub fn new(label: impl Into<String>) -> Button {
         Button {
             id: format!("id{id}",id=Uuid::new_v4()),
-            label,
+            label: label.into(),
             click_event: None,
         }
     }
@@ -48,10 +48,10 @@ pub struct Checkbox {
 }
 
 impl Checkbox {
-    pub fn new(label: String) -> Self {
+    pub fn new(label: impl Into<String>) -> Self {
         Checkbox {
             id: format!("id{id}",id=Uuid::new_v4()),
-            label,
+            label: label.into(),
             checked: false,
         }
     }

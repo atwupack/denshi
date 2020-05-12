@@ -20,8 +20,8 @@ impl MenuBar {
         }
     }
 
-    pub fn add_entry(&mut self, label: String) {
-        self.entries.push(Entry(label));
+    pub fn add_entry(&mut self, label: impl Into<String>) {
+        self.entries.push(Entry(label.into()));
     }
 
     fn render_items(&self) -> String {

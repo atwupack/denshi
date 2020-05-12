@@ -222,9 +222,9 @@ impl TabPane {
         }
     }
 
-    pub fn add_tab(&mut self, label: String, content: impl Component + 'static) {
+    pub fn add_tab(&mut self, label: impl Into<String>, content: impl Component + 'static) {
         self.tabs.push(Tab {
-           label,
+           label: label.into(),
             content: Box::new(content),
         });
     }
@@ -232,16 +232,18 @@ impl TabPane {
     fn render_tab_headers(&self) -> String {
         let mut tabs = String::new();
         for tab in &self.tabs {
-            tabs.push_str(format!("<li><a href=\"#{id}\">{label}</a></li>", id=tab.content.id(), label=tab.label).as_str());
+            tabs.push_str(format!("<li><a href=\"#{id}tab\">{label}</a></li>", id=tab.content.id(), label=tab.label).as_str());
         }
         tabs
     }
 
     fn render_tab_content(&self) -> String {
         let mut tabs = String::new();
-        tabs.push_str("<div class=\"border bd-default no-border-top p-2 h-100\">");
+        tabs.push_str("<div class=\"border bd-default no-border-top p-2 w-100 h-100\">");
         for tab in &self.tabs {
+            tabs.push_str(format!("<div class=\"w-100 h-100\" id=\"{id}tab\">", id=tab.content.id()).as_str());
             tabs.push_str(tab.content.render().as_str());
+            tabs.push_str("</div>");
         }
         tabs.push_str("</div>");
         tabs

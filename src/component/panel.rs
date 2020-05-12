@@ -19,8 +19,8 @@ impl Panel {
         }
     }
 
-    pub fn set_title(&mut self, title: String) {
-        self.title = Some(title)
+    pub fn set_title(&mut self, title: impl Into<String>) {
+        self.title = Some(title.into())
     }
 
     pub fn set_collapsible(&mut self, collapsible: bool) {

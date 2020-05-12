@@ -25,9 +25,9 @@ pub struct App {
 
 
 impl App {
-    pub fn new(title: String, content: impl Component + 'static) -> Self {
+    pub fn new(title: impl Into<String>, content: impl Component + 'static) -> Self {
         App {
-            title,
+            title: title.into(),
             content: Box::new(content),
         }
     }

@@ -1,6 +1,6 @@
 use denshi::App;
 use denshi::component::button::{Button, Checkbox};
-use denshi::component::text::TextField;
+use denshi::component::text::{TextField, TextArea};
 use denshi::component::layout::{Form, Page, TabPane, Splitter, Orientation};
 use denshi::component::menu::MenuBar;
 use denshi::component::panel::Panel;
@@ -36,39 +36,42 @@ fn main() {
 
     // create menu
     let mut menu = MenuBar::new();
-    menu.add_entry("File".to_string());
-    menu.add_entry("Edit".to_string());
-    menu.add_entry("Help".to_string());
+    menu.add_entry("File");
+    menu.add_entry("Edit");
+    menu.add_entry("Help");
 
     // create tab pane
     let mut tabs = TabPane::new();
 
     // form tab
     let mut form = Form::new();
-    let mut button = Button::new("Test Button".to_owned());
+    let mut button = Button::new("Test Button");
     button.set_click_event(|| {
        dbg!("Clicked");
     });
-    let text = TextField::new("Enter Name: ".to_owned());
+    let text = TextField::new("Enter Name: ");
 
-    let checkbox = Checkbox::new("Checkbox".to_owned());
+    let checkbox = Checkbox::new("Checkbox");
 
-    //form.add_line(menu);
     form.add_line(text);
     form.add_line(button);
     form.add_line(checkbox);
 
-    tabs.add_tab("Form".to_string(), form);
+    tabs.add_tab("Form", form);
 
     // second tab
     let mut left = Panel::new();
-    left.set_title("Left".to_string());
+    left.set_title("Left");
 
     let mut right = Panel::new();
-    right.set_title("Right".to_string());
+    right.set_title("Right");
 
     let split = Splitter::new(Orientation::VERTICAL, left, right);
-    tabs.add_tab("Splitter".to_string(), split);
+    tabs.add_tab("Splitter", split);
+
+    // text area tab
+    let area = TextArea::new();
+    tabs.add_tab("Text Area", area);
 
     // create tree
     let tree = build_tree();
@@ -76,12 +79,10 @@ fn main() {
     // create split pane
     let main_split = Splitter::new(Orientation::HORIZONTAL, tree, tabs);
 
-
-
     let mut page = Page::new();
     page.set_header(menu);
     page.set_content(main_split);
 
-    let app = App::new("Demo".to_owned(), page);
+    let app = App::new("Demo", page);
     app.run();
 }
