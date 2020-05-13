@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 pub enum EventValue {
     Clicked,
+    ChildClicked(String),
     ValueChanged(String),
     Created,
 }

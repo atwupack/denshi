@@ -1,10 +1,23 @@
 "use strict";
 function fire_clicked(id) {
-    window.external.invoke("{\"id\":\"" + id + "\",\"value\":\"Clicked\"}");
+    safe_invoke("{\"id\":\"" + id + "\",\"value\":\"Clicked\"}");
 }
 function fire_value_changed(id) {
-    window.external.invoke("{\"id\":\"" + id + "\",\"value\":{\"ValueChanged\":" + JSON.stringify($("#" + id).val()) + "}}");
+    safe_invoke("{\"id\":\"" + id + "\",\"value\":{\"ValueChanged\":" + JSON.stringify($("#" + id).val()) + "}}");
 }
 function fire_created(id) {
-    window.external.invoke("{\"id\":\"" + id + "\",\"value\":\"Created\"}");
+    safe_invoke("{\"id\":\"" + id + "\",\"value\":\"Created\"}");
+}
+
+function fire_node_clicked(node) {
+    safe_invoke("{\"id\":\"" + this.id + "\",\"value\":{\"ChildClicked\":" + JSON.stringify(node.id) + "}}");
+}
+
+function safe_invoke(str) {
+    try {
+        window.external.invoke(str);
+    }
+    catch (e) {
+
+    }
 }

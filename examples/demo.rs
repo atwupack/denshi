@@ -7,19 +7,33 @@ use denshi::component::tree::{Tree, TreeNode};
 use denshi::App;
 use std::error::Error;
 
-fn build_tree() -> Tree {
+#[derive(Debug)]
+enum Section {
+    Components,
+    Buttons,
+    Containers,
+    Forms,
+    Layouts,
+    PageLayout,
+}
+
+fn build_tree() -> Tree<Section> {
     let mut tree = Tree::new();
 
-    let mut comp_node = TreeNode::new("Components");
-    comp_node.add_child(TreeNode::new("Buttons"));
+    tree.set_click_event(|user_object| {
+        dbg!(user_object);
+    });
+
+    let mut comp_node = TreeNode::new("Components",  Section::Components);
+    comp_node.add_child(TreeNode::new("Buttons", Section::Buttons));
     tree.add_root(comp_node);
 
-    let mut cont_node = TreeNode::new("Containers");
-    cont_node.add_child(TreeNode::new("Forms"));
+    let mut cont_node = TreeNode::new("Containers", Section::Containers);
+    cont_node.add_child(TreeNode::new("Forms", Section::Forms));
     tree.add_root(cont_node);
 
-    let mut layout_node = TreeNode::new("Layouts");
-    layout_node.add_child(TreeNode::new("Page Layout"));
+    let mut layout_node = TreeNode::new("Layouts", Section::Layouts);
+    layout_node.add_child(TreeNode::new("Page Layout", Section::PageLayout));
     tree.add_root(layout_node);
 
     tree
