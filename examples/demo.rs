@@ -54,6 +54,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // second tab
     let mut left = Panel::new();
     left.set_title("Left");
+    left.set_collapsible(true);
 
     let mut right = Panel::new();
     right.set_title("Right");

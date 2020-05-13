@@ -64,7 +64,7 @@ impl Checkbox {
 impl Component for Checkbox {
     fn render(&self) -> String {
         format!(
-            r#"<input id="{id}" type="checkbox" data-role="checkbox" data-caption="{label}" />"#,
+            r#"<input id="{id}" type="checkbox" data-role="checkbox" data-on-checkbox-create="fire_created('{id}')" data-caption="{label}">"#,
             id = self.id,
             label = self.label
         )
@@ -72,7 +72,7 @@ impl Component for Checkbox {
 
     fn handle_event(&mut self, event: &Event) {
         if event.id == self.id {
-            dbg!("Clicked");
+            
         }
     }
 
