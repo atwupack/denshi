@@ -24,14 +24,18 @@ impl Button {
 
 impl Component for Button {
     fn render(&self) -> String {
-        format!(r#"<a id="{id}" class="button" onclick="fire_clicked('{id}')">{label}</a>"#, id=self.id, label=self.label)
+        format!(
+            r#"<a id="{id}" class="button" onclick="fire_clicked('{id}')">{label}</a>"#,
+            id = self.id,
+            label = self.label
+        )
     }
 
     fn handle_event(&mut self, event: &Event) {
         if event.id == self.id {
             match &self.click_event {
                 Some(listener) => listener(),
-                None => ()
+                None => (),
             }
         }
     }
@@ -59,7 +63,11 @@ impl Checkbox {
 
 impl Component for Checkbox {
     fn render(&self) -> String {
-        format!(r#"<input id="{id}" type="checkbox" data-role="checkbox" data-caption="{label}" />"#, id=self.id, label=self.label)
+        format!(
+            r#"<input id="{id}" type="checkbox" data-role="checkbox" data-caption="{label}" />"#,
+            id = self.id,
+            label = self.label
+        )
     }
 
     fn handle_event(&mut self, event: &Event) {

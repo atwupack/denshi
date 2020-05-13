@@ -1,12 +1,11 @@
-use denshi::App;
 use denshi::component::button::{Button, Checkbox};
-use denshi::component::text::{TextField, TextArea};
-use denshi::component::layout::{Form, Page, TabPane, Splitter, Orientation};
+use denshi::component::layout::{Form, Orientation, Page, Splitter, TabPane};
 use denshi::component::menu::MenuBar;
 use denshi::component::panel::Panel;
+use denshi::component::text::{TextArea, TextField};
 use denshi::component::tree::{Tree, TreeNode};
+use denshi::App;
 use std::error::Error;
-
 
 fn build_tree() -> Tree {
     let mut tree = Tree::new();
@@ -26,8 +25,7 @@ fn build_tree() -> Tree {
     tree
 }
 
-fn main() -> Result<(), Box<dyn Error>>{
-
+fn main() -> Result<(), Box<dyn Error>> {
     // create menu
     let mut menu = MenuBar::new();
     menu.add_entry("File");
@@ -41,7 +39,7 @@ fn main() -> Result<(), Box<dyn Error>>{
     let mut form = Form::new();
     let mut button = Button::new("Test Button");
     button.set_click_event(|| {
-       dbg!("Clicked");
+        dbg!("Clicked");
     });
     let text = TextField::new("Enter Name: ");
 

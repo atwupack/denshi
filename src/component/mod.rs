@@ -1,10 +1,10 @@
 use crate::event::Event;
 
 pub mod button;
-pub mod text;
 pub mod layout;
 pub mod menu;
 pub mod panel;
+pub mod text;
 pub mod tree;
 
 pub trait Component {

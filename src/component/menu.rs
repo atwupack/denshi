@@ -1,6 +1,6 @@
+use crate::component::menu::MenuItem::Entry;
 use crate::component::Component;
 use crate::event::Event;
-use crate::component::menu::MenuItem::Entry;
 use crate::utils::create_id;
 
 enum MenuItem {
@@ -28,7 +28,9 @@ impl MenuBar {
         let mut items = String::new();
         for entry in &self.entries {
             match entry {
-                Entry(label) => items.push_str(format!("<li><a href=\"#\">{label}</a></li>", label = label).as_str()),
+                Entry(label) => items.push_str(
+                    format!("<li><a href=\"#\">{label}</a></li>", label = label).as_str(),
+                ),
             }
         }
         items
@@ -37,18 +39,17 @@ impl MenuBar {
 
 impl Component for MenuBar {
     fn render(&self) -> String {
-        format!(r#"<ul class="h-menu">{items}</ul>"#, items=self.render_items())
+        format!(
+            r#"<ul class="h-menu">{items}</ul>"#,
+            items = self.render_items()
+        )
     }
 
-    fn handle_event(&mut self, _event: &Event) {
-
-    }
+    fn handle_event(&mut self, _event: &Event) {}
 
     fn id(&self) -> &str {
         &*self.id
     }
 }
 
-pub struct Menu {
-
-}
+pub struct Menu {}

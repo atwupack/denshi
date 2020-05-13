@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum EventValue {
@@ -12,7 +12,6 @@ pub struct Event {
     pub id: String,
     pub value: EventValue,
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -42,4 +41,15 @@ mod tests {
         dbg!(serde_json::to_string(&event).unwrap());
     }
 
+    #[test]
+    fn test_value_created() {
+        let event = Event {
+            id: "1234".into(),
+            value: EventValue::Created,
+        };
+
+        dbg!(&event);
+
+        dbg!(serde_json::to_string(&event).unwrap());
+    }
 }

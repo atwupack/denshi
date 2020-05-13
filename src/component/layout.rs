@@ -2,7 +2,6 @@ use crate::component::Component;
 use crate::event::Event;
 use crate::utils::create_id;
 
-
 pub struct BorderLayout {
     id: String,
     top: Option<Box<dyn Component>>,
@@ -39,7 +38,6 @@ impl Component for BorderLayout {
     }
 }
 
-
 pub enum Orientation {
     VERTICAL,
     HORIZONTAL,
@@ -54,13 +52,17 @@ pub struct Splitter {
 }
 
 impl Splitter {
-    pub fn new(orientation: Orientation, first: impl Component + 'static, second: impl Component + 'static) -> Splitter {
+    pub fn new(
+        orientation: Orientation,
+        first: impl Component + 'static,
+        second: impl Component + 'static,
+    ) -> Splitter {
         Splitter {
             id: create_id(),
             orientation,
             gutter_size: 4,
             first: Box::new(first),
-            second : Box::new(second),
+            second: Box::new(second),
         }
     }
 
@@ -71,21 +73,22 @@ impl Splitter {
 
 impl Component for Splitter {
     fn render(&self) -> String {
-
         let split_mode = match self.orientation {
             Orientation::HORIZONTAL => "data-split-mode=\"horizontal\"",
             Orientation::VERTICAL => "data-split-mode=\"vertical\"",
         };
 
-        format!(r#"<div id="{id}" data-gutter-size="{gutter}" data-role="splitter" class="h-100" {split_mode}>
+        format!(
+            r#"<div id="{id}" data-gutter-size="{gutter}" data-role="splitter" class="h-100" {split_mode}>
                       <div class="d-flex flex-justify-start flex-align-start">{first}</div>
                       <div class="d-flex flex-column flex-justify-start flex-align-start">{second}</div>
                    </div>"#,
-                    id=self.id,
-                    first=self.first.render(),
-                    second=self.second.render(),
-                    split_mode=split_mode,
-                    gutter=self.gutter_size)
+            id = self.id,
+            first = self.first.render(),
+            second = self.second.render(),
+            split_mode = split_mode,
+            gutter = self.gutter_size
+        )
     }
 
     fn handle_event(&mut self, event: &Event) {
@@ -126,24 +129,34 @@ impl Page {
     pub fn set_footer(&mut self, footer: impl Component + 'static) {
         self.header = Some(Box::new(footer))
     }
-
 }
 
 impl Component for Page {
     fn render(&self) -> String {
         let mut components = String::new();
-        components.push_str("<div class=\"noselect h-100 container-fluid d-flex flex-column flex-align-stretch\">");
+        components.push_str(
+            "<div class=\"noselect h-100 container-fluid d-flex flex-column flex-align-stretch\">",
+        );
 
         if self.header.is_some() {
-            components.push_str(&format!("<header>{header}</header>", header=self.header.as_ref().unwrap().render()));
+            components.push_str(&format!(
+                "<header>{header}</header>",
+                header = self.header.as_ref().unwrap().render()
+            ));
         }
 
         if self.content.is_some() {
-            components.push_str(&format!("<div class=\"h-100\">{content}</div>", content=self.content.as_ref().unwrap().render()));
+            components.push_str(&format!(
+                "<div class=\"h-100\">{content}</div>",
+                content = self.content.as_ref().unwrap().render()
+            ));
         }
 
         if self.footer.is_some() {
-            components.push_str(&format!("<footer>{footer}</footer>", footer=self.footer.as_ref().unwrap().render()));
+            components.push_str(&format!(
+                "<footer>{footer}</footer>",
+                footer = self.footer.as_ref().unwrap().render()
+            ));
         }
 
         components.push_str("</div>");
@@ -187,7 +200,13 @@ impl Form {
     fn render_lines(&self) -> String {
         let mut lines = String::new();
         for comp in &self.components {
-            lines.push_str(format!("<div class=\"form-group\">{line}</div>", line=comp.render()).as_str());
+            lines.push_str(
+                format!(
+                    "<div class=\"form-group\">{line}</div>",
+                    line = comp.render()
+                )
+                .as_str(),
+            );
         }
         lines
     }
@@ -195,7 +214,11 @@ impl Form {
 
 impl Component for Form {
     fn render(&self) -> String {
-        format!("<form id=\"{id}\">{lines}</form>", id=self.id, lines=self.render_lines())
+        format!(
+            "<form id=\"{id}\">{lines}</form>",
+            id = self.id,
+            lines = self.render_lines()
+        )
     }
 
     fn handle_event(&mut self, event: &Event) {
@@ -229,7 +252,7 @@ impl TabPane {
 
     pub fn add_tab(&mut self, label: impl Into<String>, content: impl Component + 'static) {
         self.tabs.push(Tab {
-           label: label.into(),
+            label: label.into(),
             content: Box::new(content),
         });
     }
@@ -237,7 +260,14 @@ impl TabPane {
     fn render_tab_headers(&self) -> String {
         let mut tabs = String::new();
         for tab in &self.tabs {
-            tabs.push_str(format!("<li><a href=\"#{id}tab\">{label}</a></li>", id=tab.content.id(), label=tab.label).as_str());
+            tabs.push_str(
+                format!(
+                    "<li><a href=\"#{id}tab\">{label}</a></li>",
+                    id = tab.content.id(),
+                    label = tab.label
+                )
+                .as_str(),
+            );
         }
         tabs
     }
@@ -246,7 +276,13 @@ impl TabPane {
         let mut tabs = String::new();
         tabs.push_str("<div class=\"border bd-default no-border-top p-2 w-100 h-100\">");
         for tab in &self.tabs {
-            tabs.push_str(format!("<div class=\"w-100 h-100\" id=\"{id}tab\">", id=tab.content.id()).as_str());
+            tabs.push_str(
+                format!(
+                    "<div class=\"w-100 h-100\" id=\"{id}tab\">",
+                    id = tab.content.id()
+                )
+                .as_str(),
+            );
             tabs.push_str(tab.content.render().as_str());
             tabs.push_str("</div>");
         }
@@ -257,7 +293,11 @@ impl TabPane {
 
 impl Component for TabPane {
     fn render(&self) -> String {
-        format!(r#"<ul data-role="tabs" data-expand="true">{tabs}</ul>{content}"#, tabs=self.render_tab_headers(), content=self.render_tab_content())
+        format!(
+            r#"<ul data-role="tabs" data-expand="true">{tabs}</ul>{content}"#,
+            tabs = self.render_tab_headers(),
+            content = self.render_tab_content()
+        )
     }
 
     fn handle_event(&mut self, event: &Event) {

@@ -20,14 +20,17 @@ impl TreeNode {
     }
 
     pub fn render_node(&self) -> String {
-        format!("<li data-caption=\"{caption}\" data-collapsed=\"true\">{children}</li>", caption = self.caption, children = self.render_children())
+        format!(
+            "<li data-caption=\"{caption}\" data-collapsed=\"true\">{children}</li>",
+            caption = self.caption,
+            children = self.render_children()
+        )
     }
 
     fn render_children(&self) -> String {
         if self.nodes.is_empty() {
             "".to_string()
-        }
-        else {
+        } else {
             let mut s = "<ul>".to_string();
             for node in &self.nodes {
                 s.push_str(node.render_node().as_str());
@@ -66,7 +69,11 @@ impl Tree {
 
 impl Component for Tree {
     fn render(&self) -> String {
-        format!(r#"<ul id="{id}" data-role="treeview">{roots}</ul>"#, id=self.id, roots = self.render_roots())
+        format!(
+            r#"<ul id="{id}" data-role="treeview">{roots}</ul>"#,
+            id = self.id,
+            roots = self.render_roots()
+        )
     }
 
     fn handle_event(&mut self, _event: &Event) {

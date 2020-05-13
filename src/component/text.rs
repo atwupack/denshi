@@ -8,15 +8,16 @@ pub struct TextArea {
 
 impl TextArea {
     pub fn new() -> Self {
-        TextArea {
-            id: create_id(),
-        }
+        TextArea { id: create_id() }
     }
 }
 
 impl Component for TextArea {
     fn render(&self) -> String {
-        format!(r#"<textarea id="{id}" class="w-100 h-100" data-on-change="fire_value_changed('{id}')" data-on-textarea-create="fire_created('{id}')" data-role="textarea" ></textarea>"#, id=self.id)
+        format!(
+            r#"<textarea id="{id}" class="w-100 h-100" data-on-change="fire_value_changed('{id}')" data-on-textarea-create="fire_created('{id}')" data-role="textarea" ></textarea>"#,
+            id = self.id
+        )
     }
 
     fn handle_event(&mut self, event: &Event) {
@@ -46,7 +47,11 @@ impl TextField {
 
 impl Component for TextField {
     fn render(&self) -> String {
-        format!(r#"<input id="{id}" oninput="fire_value_changed('{id}')" data-on-clear-click="fire_value_changed('{id}')" type="text" data-role="input" data-prepend="{label}"/>"#, id=self.id, label=self.label)
+        format!(
+            r#"<input id="{id}" oninput="fire_value_changed('{id}')" data-on-clear-click="fire_value_changed('{id}')" type="text" data-role="input" data-prepend="{label}"/>"#,
+            id = self.id,
+            label = self.label
+        )
     }
 
     fn handle_event(&mut self, event: &Event) {

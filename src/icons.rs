@@ -1,5 +1,3 @@
-
-
 pub enum Icon {
     MifIcon(MifIcon),
     FileIcon(),
@@ -11,4 +9,3 @@ pub enum MifIcon {
     Exit,
     FloppyDisk,
 }
-

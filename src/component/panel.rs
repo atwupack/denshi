@@ -30,7 +30,7 @@ impl Panel {
 
 fn optional_attribute(attribute: &str, value: &Option<String>) -> String {
     match value {
-        Some(s) => format!("{attr}=\"{value}\"", attr=attribute, value=s),
+        Some(s) => format!("{attr}=\"{value}\"", attr = attribute, value = s),
         None => "".to_string(),
     }
 }
@@ -43,9 +43,7 @@ impl Component for Panel {
                 collapsible=self.collapsible)
     }
 
-    fn handle_event(&mut self, _event: &Event) {
-
-    }
+    fn handle_event(&mut self, _event: &Event) {}
 
     fn id(&self) -> &str {
         &*self.id
