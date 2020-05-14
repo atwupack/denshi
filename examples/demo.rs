@@ -39,16 +39,7 @@ fn build_tree() -> Tree<Section> {
     tree
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
-    // create menu
-    let mut menu = MenuBar::new();
-    menu.add_entry("File");
-    menu.add_entry("Edit");
-    menu.add_entry("Help");
-
-    // create tab pane
-    let mut tabs = TabPane::new();
-
+fn build_form() -> Form {
     // form tab
     let mut form = Form::new();
     let mut button = Button::new("Test Button");
@@ -62,10 +53,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     form.add_line(text);
     form.add_line(button);
     form.add_line(checkbox);
+    form
+}
 
-    tabs.add_tab("Form", form);
-
-    // second tab
+fn build_splitter() -> Splitter {
     let mut left = Panel::new();
     left.set_title("Left");
     left.set_collapsible(true);
@@ -73,18 +64,29 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut right = Panel::new();
     right.set_title("Right");
 
-    let split = Splitter::new(Orientation::VERTICAL, left, right);
-    tabs.add_tab("Splitter", split);
+    Splitter::new(Orientation::VERTICAL, left, right)
+}
 
-    // text area tab
-    let area = TextArea::new();
-    tabs.add_tab("Text Area", area);
+fn build_text_area() -> TextArea {
+    TextArea::new()
+}
 
-    // create tree
-    let tree = build_tree();
+fn main() -> Result<(), Box<dyn Error>> {
+    // create menu
+    let mut menu = MenuBar::new();
+    menu.add_entry("File");
+    menu.add_entry("Edit");
+    menu.add_entry("Help");
+
+    // create tab pane
+    let mut tabs = TabPane::new();
+
+    tabs.add_tab("Form", build_form());
+    tabs.add_tab("Splitter", build_splitter());
+    tabs.add_tab("Text Area", build_text_area());
 
     // create split pane
-    let mut main_split = Splitter::new(Orientation::HORIZONTAL, tree, tabs);
+    let mut main_split = Splitter::new(Orientation::HORIZONTAL, build_tree(), tabs);
     main_split.set_gutter_size(10);
 
     let mut page = Page::new();
