@@ -107,7 +107,7 @@ impl<U> Tree<U> {
 impl<U> Component for Tree<U> {
     fn render(&self) -> String {
         format!(
-            r#"<ul id="{id}" data-role="treeview" data-on-node-click="fire_node_clicked">{roots}</ul>"#,
+            r#"<ul id="{id}" data-role="treeview" data-on-tree-view-create="fire_created" data-on-node-click="fire_node_clicked">{roots}</ul>"#,
             id = self.id,
             roots = self.render_roots()
         )

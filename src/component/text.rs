@@ -15,7 +15,7 @@ impl TextArea {
 impl Component for TextArea {
     fn render(&self) -> String {
         format!(
-            r#"<textarea id="{id}" class="w-100 h-100" data-on-change="fire_value_changed('{id}')" data-on-textarea-create="fire_created('{id}')" data-role="textarea" ></textarea>"#,
+            r#"<textarea id="{id}" class="w-100 h-100" data-on-change="fire_value_changed('{id}')" data-on-textarea-create="fire_created" data-role="textarea" ></textarea>"#,
             id = self.id
         )
     }

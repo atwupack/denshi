@@ -64,7 +64,7 @@ impl Checkbox {
 impl Component for Checkbox {
     fn render(&self) -> String {
         format!(
-            r#"<input id="{id}" type="checkbox" data-role="checkbox" data-on-checkbox-create="fire_created('{id}')" data-caption="{label}">"#,
+            r#"<input id="{id}" type="checkbox" data-role="checkbox" data-on-checkbox-create="fire_created" data-caption="{label}">"#,
             id = self.id,
             label = self.label
         )
