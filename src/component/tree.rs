@@ -3,6 +3,15 @@ use crate::event::Event;
 use crate::utils::create_id;
 use crate::event::EventValue::ChildClicked;
 
+pub trait TreeModel<U> {
+    /// get the roots of the tree.
+    fn roots(&self) -> Vec<U>;
+    /// get a node's children
+    fn children(&self, parent: U) -> Vec<U>;
+    // get the label to be displayed for a node.
+    fn label(&self, node: &U) -> &str;
+}
+
 pub struct TreeNode<U> {
     id: String,
     caption: String,
@@ -66,14 +75,16 @@ pub struct Tree<U> {
     id: String,
     roots: Vec<TreeNode<U>>,
     click_event: Option<Box<dyn Fn(&U)>>,
+    model: Box<dyn TreeModel<U>>,
 }
 
 impl<U> Tree<U> {
-    pub fn new() -> Self {
+    pub fn new(model: impl TreeModel<U> + 'static) -> Self {
         Tree {
             id: create_id(),
             roots: Vec::new(),
             click_event: None,
+            model: Box::new(model),
         }
     }
 

@@ -3,9 +3,10 @@ use denshi::component::layout::{Form, Orientation, Page, Splitter, TabPane};
 use denshi::component::menu::MenuBar;
 use denshi::component::panel::Panel;
 use denshi::component::text::{TextArea, TextField};
-use denshi::component::tree::{Tree, TreeNode};
+use denshi::component::tree::{Tree, TreeNode, TreeModel};
 use denshi::App;
 use std::error::Error;
+use crate::Section::{Components, Containers, Layouts, Buttons, Forms, PageLayout};
 
 #[derive(Debug)]
 enum Section {
@@ -17,8 +18,39 @@ enum Section {
     PageLayout,
 }
 
+struct SectionTree {
+
+}
+
+impl TreeModel<Section> for SectionTree {
+    fn roots(&self) -> Vec<Section> {
+        vec!(Components, Containers, Layouts)
+    }
+
+    fn children(&self, parent: Section) -> Vec<Section> {
+        match parent {
+            Components => vec!(Buttons),
+            Containers => vec!(Forms),
+            Layouts => vec!(PageLayout),
+            _ => Vec::new(),
+        }
+    }
+
+    fn label(&self, node: &Section) -> &str {
+        match node {
+            Components => "Components",
+            Buttons => "Buttons",
+            Containers => "Containers",
+            Forms => "Forms",
+            Layouts => "Layouts",
+            PageLayout => "Page Layout",
+            _ => "<unknown>",
+        }
+    }
+}
+
 fn build_tree() -> Tree<Section> {
-    let mut tree = Tree::new();
+    let mut tree = Tree::new(SectionTree{});
 
     tree.set_click_event(|user_object| {
         dbg!(user_object);
