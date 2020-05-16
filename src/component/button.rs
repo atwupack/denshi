@@ -1,6 +1,7 @@
 use crate::component::Component;
 use crate::event::Event;
 use crate::utils::create_id;
+use web_view::WebView;
 
 pub struct Button {
     id: String,
@@ -23,7 +24,7 @@ impl Button {
 }
 
 impl Component for Button {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         format!(
             r#"<a id="{id}" class="button" onclick="fire_clicked('{id}')">{label}</a>"#,
             id = self.id,
@@ -31,7 +32,7 @@ impl Component for Button {
         )
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, _webview: &mut WebView<()>, event: &Event) {
         if event.id == self.id {
             match &self.click_event {
                 Some(listener) => listener(),
@@ -62,7 +63,7 @@ impl Checkbox {
 }
 
 impl Component for Checkbox {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         format!(
             r#"<input id="{id}" type="checkbox" data-role="checkbox" data-on-checkbox-create="fire_created" data-caption="{label}">"#,
             id = self.id,
@@ -70,7 +71,7 @@ impl Component for Checkbox {
         )
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, _webview: &mut WebView<()>, event: &Event) {
         if event.id == self.id {
             
         }

@@ -1,6 +1,7 @@
 use crate::component::Component;
 use crate::event::Event;
 use crate::utils::create_id;
+use web_view::WebView;
 
 pub struct TextArea {
     id: String,
@@ -13,14 +14,14 @@ impl TextArea {
 }
 
 impl Component for TextArea {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         format!(
             r#"<textarea id="{id}" class="w-100 h-100" data-on-change="fire_value_changed('{id}')" data-on-textarea-create="fire_created" data-role="textarea" ></textarea>"#,
             id = self.id
         )
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, _webview: &mut WebView<()>, event: &Event) {
         if event.id == self.id {
             dbg!(event);
         }
@@ -46,7 +47,7 @@ impl TextField {
 }
 
 impl Component for TextField {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         format!(
             r#"<input id="{id}" oninput="fire_value_changed('{id}')" data-on-clear-click="fire_value_changed('{id}')" type="text" data-role="input" data-prepend="{label}"/>"#,
             id = self.id,
@@ -54,7 +55,7 @@ impl Component for TextField {
         )
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, _webview: &mut WebView<()>, event: &Event) {
         if event.id == self.id {
             dbg!(event);
         }

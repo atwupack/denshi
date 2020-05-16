@@ -56,10 +56,10 @@ impl App {
             .resizable(true)
             .debug(true)
             .user_data(())
-            .invoke_handler(|_webview, arg| {
+            .invoke_handler(|webview, arg| {
                 let event: Event = serde_json::from_str(arg).unwrap();
                 dbg!(&event);
-                self.content.handle_event(&event);
+                self.content.handle_event(webview, &event);
                 Ok(())
             })
             .title(title.as_str())

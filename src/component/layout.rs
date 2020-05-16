@@ -1,6 +1,7 @@
 use crate::component::Component;
 use crate::event::Event;
 use crate::utils::create_id;
+use web_view::WebView;
 
 pub struct BorderLayout {
     id: String,
@@ -25,11 +26,11 @@ impl BorderLayout {
 }
 
 impl Component for BorderLayout {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         unimplemented!()
     }
 
-    fn handle_event(&mut self, _event: &Event) {
+    fn handle_event(&mut self, _webview: &mut WebView<()>, _event: &Event) {
         unimplemented!()
     }
 
@@ -72,7 +73,7 @@ impl Splitter {
 }
 
 impl Component for Splitter {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         let split_mode = match self.orientation {
             Orientation::HORIZONTAL => "data-split-mode=\"horizontal\"",
             Orientation::VERTICAL => "data-split-mode=\"vertical\"",
@@ -91,9 +92,9 @@ impl Component for Splitter {
         )
     }
 
-    fn handle_event(&mut self, event: &Event) {
-        self.first.handle_event(event);
-        self.second.handle_event(event);
+    fn handle_event(&mut self, webview: &mut WebView<()>, event: &Event) {
+        self.first.handle_event(webview, event);
+        self.second.handle_event(webview, event);
     }
 
     fn id(&self) -> &str {
@@ -132,7 +133,7 @@ impl Page {
 }
 
 impl Component for Page {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         let mut components = String::new();
         components.push_str(
             "<div class=\"noselect h-100 container-fluid d-flex flex-column flex-align-stretch\">",
@@ -141,21 +142,21 @@ impl Component for Page {
         if self.header.is_some() {
             components.push_str(&format!(
                 "<header>{header}</header>",
-                header = self.header.as_ref().unwrap().render()
+                header = self.header.as_mut().unwrap().render()
             ));
         }
 
         if self.content.is_some() {
             components.push_str(&format!(
                 "<div class=\"h-100\">{content}</div>",
-                content = self.content.as_ref().unwrap().render()
+                content = self.content.as_mut().unwrap().render()
             ));
         }
 
         if self.footer.is_some() {
             components.push_str(&format!(
                 "<footer>{footer}</footer>",
-                footer = self.footer.as_ref().unwrap().render()
+                footer = self.footer.as_mut().unwrap().render()
             ));
         }
 
@@ -163,15 +164,15 @@ impl Component for Page {
         components
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, webview: &mut WebView<()>, event: &Event) {
         if self.header.is_some() {
-            self.header.as_mut().unwrap().handle_event(event);
+            self.header.as_mut().unwrap().handle_event(webview, event);
         }
         if self.content.is_some() {
-            self.content.as_mut().unwrap().handle_event(event);
+            self.content.as_mut().unwrap().handle_event(webview, event);
         }
         if self.footer.is_some() {
-            self.footer.as_mut().unwrap().handle_event(event);
+            self.footer.as_mut().unwrap().handle_event(webview, event);
         }
     }
 
@@ -197,9 +198,9 @@ impl Form {
         self.components.push(Box::new(component));
     }
 
-    fn render_lines(&self) -> String {
+    fn render_lines(&mut self) -> String {
         let mut lines = String::new();
-        for comp in &self.components {
+        for comp in &mut self.components {
             lines.push_str(
                 format!(
                     "<div class=\"form-group\">{line}</div>",
@@ -213,17 +214,19 @@ impl Form {
 }
 
 impl Component for Form {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
+
+        let lines = self.render_lines();
         format!(
             "<form id=\"{id}\">{lines}</form>",
-            id = self.id,
-            lines = self.render_lines()
+            id = self.id(),
+            lines = lines,
         )
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, webview: &mut WebView<()>, event: &Event) {
         for comp in &mut self.components {
-            comp.handle_event(event);
+            comp.handle_event(webview, event);
         }
     }
 
@@ -272,10 +275,10 @@ impl TabPane {
         tabs
     }
 
-    fn render_tab_content(&self) -> String {
+    fn render_tab_content(&mut self) -> String {
         let mut tabs = String::new();
         tabs.push_str("<div class=\"border bd-default no-border-top p-2 w-100 h-100\">");
-        for tab in &self.tabs {
+        for tab in &mut self.tabs {
             tabs.push_str(
                 format!(
                     "<div class=\"w-100 h-100\" id=\"{id}tab\">",
@@ -292,7 +295,7 @@ impl TabPane {
 }
 
 impl Component for TabPane {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         format!(
             r#"<ul data-role="tabs" data-expand="true">{tabs}</ul>{content}"#,
             tabs = self.render_tab_headers(),
@@ -300,9 +303,9 @@ impl Component for TabPane {
         )
     }
 
-    fn handle_event(&mut self, event: &Event) {
+    fn handle_event(&mut self, webview: &mut WebView<()>, event: &Event) {
         for tab in &mut self.tabs {
-            tab.content.handle_event(event);
+            tab.content.handle_event(webview, event);
         }
     }
 

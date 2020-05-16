@@ -2,6 +2,7 @@ use crate::component::menu::MenuItem::Entry;
 use crate::component::Component;
 use crate::event::Event;
 use crate::utils::create_id;
+use web_view::WebView;
 
 enum MenuItem {
     Entry(String),
@@ -38,14 +39,14 @@ impl MenuBar {
 }
 
 impl Component for MenuBar {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         format!(
             r#"<ul class="h-menu">{items}</ul>"#,
             items = self.render_items()
         )
     }
 
-    fn handle_event(&mut self, _event: &Event) {}
+    fn handle_event(&mut self, _webview: &mut WebView<()>, _event: &Event) {}
 
     fn id(&self) -> &str {
         &*self.id

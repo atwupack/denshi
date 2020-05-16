@@ -6,6 +6,8 @@ pub enum EventValue {
     ChildClicked(String),
     ValueChanged(String),
     Created,
+    PageLoaded,
+    NodeExpand(String),
 }
 
 #[derive(Serialize, Deserialize, Debug)]

@@ -1,6 +1,7 @@
 use crate::component::Component;
 use crate::event::Event;
 use crate::utils::create_id;
+use web_view::WebView;
 
 pub struct Panel {
     id: String,
@@ -36,14 +37,14 @@ fn optional_attribute(attribute: &str, value: &Option<String>) -> String {
 }
 
 impl Component for Panel {
-    fn render(&self) -> String {
+    fn render(&mut self) -> String {
         format!("<div id=\"{id}\" class=\"h-100 w-100\" {title} data-collapsible=\"{collapsible}\" data-role=\"panel\">{content}</div>",
                 id=self.id, content="",
                 title=optional_attribute("data-title-caption", &self.title),
                 collapsible=self.collapsible)
     }
 
-    fn handle_event(&mut self, _event: &Event) {}
+    fn handle_event(&mut self, _webview: &mut WebView<()>, _event: &Event) {}
 
     fn id(&self) -> &str {
         &*self.id

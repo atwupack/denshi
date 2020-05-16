@@ -3,7 +3,7 @@ use denshi::component::layout::{Form, Orientation, Page, Splitter, TabPane};
 use denshi::component::menu::MenuBar;
 use denshi::component::panel::Panel;
 use denshi::component::text::{TextArea, TextField};
-use denshi::component::tree::{Tree, TreeNode, TreeModel};
+use denshi::component::tree::{Tree, TreeModel};
 use denshi::App;
 use std::error::Error;
 use crate::Section::{Components, Containers, Layouts, Buttons, Forms, PageLayout};
@@ -27,7 +27,7 @@ impl TreeModel<Section> for SectionTree {
         vec!(Components, Containers, Layouts)
     }
 
-    fn children(&self, parent: Section) -> Vec<Section> {
+    fn children(&self, parent: &Section) -> Vec<Section> {
         match parent {
             Components => vec!(Buttons),
             Containers => vec!(Forms),
@@ -44,7 +44,13 @@ impl TreeModel<Section> for SectionTree {
             Forms => "Forms",
             Layouts => "Layouts",
             PageLayout => "Page Layout",
-            _ => "<unknown>",
+        }
+    }
+
+    fn has_children(&self, node: &Section) -> bool {
+        match node {
+            Components | Containers | Layouts => true,
+            _ => false,
         }
     }
 }
@@ -55,18 +61,6 @@ fn build_tree() -> Tree<Section> {
     tree.set_click_event(|user_object| {
         dbg!(user_object);
     });
-
-    let mut comp_node = TreeNode::new("Components",  Section::Components);
-    comp_node.add_child(TreeNode::new("Buttons", Section::Buttons));
-    tree.add_root(comp_node);
-
-    let mut cont_node = TreeNode::new("Containers", Section::Containers);
-    cont_node.add_child(TreeNode::new("Forms", Section::Forms));
-    tree.add_root(cont_node);
-
-    let mut layout_node = TreeNode::new("Layouts", Section::Layouts);
-    layout_node.add_child(TreeNode::new("Page Layout", Section::PageLayout));
-    tree.add_root(layout_node);
 
     tree
 }
