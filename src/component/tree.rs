@@ -158,10 +158,12 @@ impl<U> Tree<U> {
                     id_parent=node_id,
                     id_node=new_node.id,
                     caption=new_node.caption);
-                webview.eval(js.as_str());
-                let mut_child = self.find_node_mut(node_id).unwrap();
-                mut_child.children_loaded = true;
-                mut_child.nodes.push(new_node);
+                let result = webview.eval(js.as_str());
+                if result.is_ok() {
+                    let mut_child = self.find_node_mut(node_id).unwrap();
+                    mut_child.children_loaded = true;
+                    mut_child.nodes.push(new_node);
+                }
             }
         }
     }
@@ -171,7 +173,7 @@ impl<U> Component for Tree<U> {
     fn render(&mut self) -> String {
         let roots = self.render_roots();
         format!(
-            r#"<ul id="{id}" data-role="treeview"  data-on-expand-node="fire_node_expand" data-on-tree-view-create="fire_created" data-on-node-click="fire_node_clicked">{roots}</ul>"#,
+            r#"<ul id="{id}" data-role="treeview" data-on-expand-node="fire_node_expand" data-on-tree-view-create="fire_created" data-on-node-click="fire_node_clicked">{roots}</ul>"#,
             id = self.id(),
             roots = roots,
         )

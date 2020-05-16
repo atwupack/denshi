@@ -3,42 +3,6 @@ use crate::event::Event;
 use crate::utils::create_id;
 use web_view::WebView;
 
-pub struct BorderLayout {
-    id: String,
-    top: Option<Box<dyn Component>>,
-    bottom: Option<Box<dyn Component>>,
-    center: Option<Box<dyn Component>>,
-    left: Option<Box<dyn Component>>,
-    right: Option<Box<dyn Component>>,
-}
-
-impl BorderLayout {
-    pub fn new() -> Self {
-        BorderLayout {
-            id: create_id(),
-            top: None,
-            bottom: None,
-            center: None,
-            left: None,
-            right: None,
-        }
-    }
-}
-
-impl Component for BorderLayout {
-    fn render(&mut self) -> String {
-        unimplemented!()
-    }
-
-    fn handle_event(&mut self, _webview: &mut WebView<()>, _event: &Event) {
-        unimplemented!()
-    }
-
-    fn id(&self) -> &str {
-        &*self.id
-    }
-}
-
 pub enum Orientation {
     VERTICAL,
     HORIZONTAL,

@@ -5,7 +5,6 @@ use web_view::WebView;
 
 pub struct Panel {
     id: String,
-    components: Vec<Box<dyn Component>>,
     title: Option<String>,
     collapsible: bool,
 }
@@ -14,7 +13,6 @@ impl Panel {
     pub fn new() -> Self {
         Panel {
             id: create_id(),
-            components: Vec::new(),
             title: None,
             collapsible: false,
         }

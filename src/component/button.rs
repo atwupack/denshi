@@ -49,7 +49,6 @@ impl Component for Button {
 pub struct Checkbox {
     id: String,
     label: String,
-    checked: bool,
 }
 
 impl Checkbox {
@@ -57,7 +56,6 @@ impl Checkbox {
         Checkbox {
             id: create_id(),
             label: label.into(),
-            checked: false,
         }
     }
 }
