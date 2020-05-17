@@ -81,11 +81,11 @@ fn build_form() -> Form {
 }
 
 fn build_splitter() -> Splitter {
-    let mut left = Panel::new();
+    let mut left = Panel::new(Button::new("Left"));
     left.set_title("Left");
     left.set_collapsible(true);
 
-    let mut right = Panel::new();
+    let mut right = Panel::new(Button::new("RightS"));
     right.set_title("Right");
 
     Splitter::new(Orientation::VERTICAL, left, right)

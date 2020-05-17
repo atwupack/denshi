@@ -6,6 +6,7 @@ use std::error::Error;
 
 use std::fs;
 use std::path::PathBuf;
+use denshi::component::button::Button;
 
 struct FileTreeModel {}
 
@@ -42,11 +43,10 @@ impl TreeModel<PathBuf> for FileTreeModel {
 fn main() -> Result<(), Box<dyn Error>> {
     let file_tree = Tree::new(FileTreeModel {});
 
-    let mut tree_panel = Panel::new();
+    let mut tree_panel = Panel::new(file_tree);
     tree_panel.set_title("File Tree");
-    tree_panel.set_content(file_tree);
 
-    let mut file_panel = Panel::new();
+    let mut file_panel = Panel::new(Button::new("Click"));
     file_panel.set_title("Directory Content");
 
     let split = Splitter::new(Orientation::HORIZONTAL, tree_panel, file_panel);

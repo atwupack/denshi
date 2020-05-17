@@ -1,4 +1,5 @@
 use uuid::Uuid;
+use crate::component::Component;
 
 /// Create a new id for a component.
 pub fn create_id() -> String {
@@ -16,4 +17,12 @@ pub fn create_div(content: &str) -> String {
         r#"<div class="w-100 h-100">{content}</div>"#,
         content = content
     )
+}
+
+pub fn render_components(content: &mut Vec<Box<dyn Component>>) -> String {
+    let mut result = "".to_string();
+    for comp in content {
+        result.push_str(comp.render().as_str());
+    }
+    result
 }
