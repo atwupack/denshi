@@ -11,7 +11,7 @@ pub trait TreeModel<U> {
     /// get a node's children
     fn children(&self, parent: &U) -> Vec<U>;
     // get the label to be displayed for a node.
-    fn label(&self, node: &U) -> &str;
+    fn label(&self, node: &U) -> String;
     /// has this nod children
     fn has_children(&self, node: &U) -> bool;
 }
@@ -142,25 +142,32 @@ impl<U> Tree<U> {
         None
     }
 
-    fn create_children(&mut self, node_id: &str, webview: &mut WebView<()>) {
-        let child = self.find_node(node_id);
-        if child.is_some() {
-            if child.unwrap().children_loaded {
+    fn create_children(&mut self, parent_id: &str, webview: &mut WebView<()>) {
+        let parent = self.find_node(parent_id);
+        if parent.is_some() {
+            if parent.unwrap().children_loaded {
                 return;
             }
-            let child_node = child.unwrap();
-            let user_object = &child_node.user_object;
+            let parent_node = parent.unwrap();
+
+            let clean_js = format!("clear_node('{tree_id}', '{node_id}')",
+                                    tree_id=self.id,
+                                    node_id=parent_id);
+            let clean_result = webview.eval(clean_js.as_str());
+
+            let user_object = &parent_node.user_object;
             let new_children = self.model.children(user_object);
             for new_child in new_children {
                 let new_node = self.create_tree_node(new_child);
-                let js = format!("add_tree_node('{id_tree}', '{id_parent}', '{id_node}', '{caption}')",
-                    id_tree=self.id,
-                    id_parent=node_id,
-                    id_node=new_node.id,
-                    caption=new_node.caption);
+                let js = format!("add_tree_node('{id_tree}', '{id_parent}', '{id_node}', '{caption}', {has_children})",
+                                 id_tree=self.id,
+                                 id_parent=parent_id,
+                                 id_node=new_node.id,
+                                 caption=new_node.caption,
+                                 has_children=new_node.has_children);
                 let result = webview.eval(js.as_str());
                 if result.is_ok() {
-                    let mut_child = self.find_node_mut(node_id).unwrap();
+                    let mut_child = self.find_node_mut(parent_id).unwrap();
                     mut_child.children_loaded = true;
                     mut_child.nodes.push(new_node);
                 }

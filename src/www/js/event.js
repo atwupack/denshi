@@ -45,13 +45,27 @@ function safe_invoke(str) {
     }
 }
 
-function add_tree_node(idTree, idParent, idNode, caption) {
+function clear_node(idTree, idNode) {
+    var tree = $('#'+idTree);
+    var parentNode = $('#'+idNode);
+
+    tree.data('treeview').clean(parentNode);
+}
+
+function add_tree_node(idTree, idParent, idNode, caption, hasChildren) {
     var tree = $('#'+idTree);
     var parentNode = $('#'+idParent);
 
     var new_node = tree.data('treeview').addTo(parentNode, {
         caption: caption
     });
+
+    if (hasChildren) {
+        tree.data('treeview').addTo(new_node, {
+            caption: 'dummy'
+        });
+        tree.data('treeview').toggleNode(new_node);
+    }
 
     new_node.id(idNode);
 }

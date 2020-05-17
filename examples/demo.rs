@@ -36,14 +36,14 @@ impl TreeModel<Section> for SectionTree {
         }
     }
 
-    fn label(&self, node: &Section) -> &str {
+    fn label(&self, node: &Section) -> String {
         match node {
-            Components => "Components",
-            Buttons => "Buttons",
-            Containers => "Containers",
-            Forms => "Forms",
-            Layouts => "Layouts",
-            PageLayout => "Page Layout",
+            Components => "Components".into(),
+            Buttons => "Buttons".into(),
+            Containers => "Containers".into(),
+            Forms => "Forms".into(),
+            Layouts => "Layouts".into(),
+            PageLayout => "Page Layout".into(),
         }
     }
 
