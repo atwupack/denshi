@@ -1,3 +1,4 @@
+use crate::Section::{Buttons, Components, Containers, Forms, Layouts, PageLayout};
 use denshi::component::button::{Button, Checkbox};
 use denshi::component::layout::{Form, Orientation, Page, Splitter, TabPane};
 use denshi::component::menu::MenuBar;
@@ -6,7 +7,6 @@ use denshi::component::text::{TextArea, TextField};
 use denshi::component::tree::{Tree, TreeModel};
 use denshi::App;
 use std::error::Error;
-use crate::Section::{Components, Containers, Layouts, Buttons, Forms, PageLayout};
 
 #[derive(Debug)]
 enum Section {
@@ -18,20 +18,18 @@ enum Section {
     PageLayout,
 }
 
-struct SectionTree {
-
-}
+struct SectionTree {}
 
 impl TreeModel<Section> for SectionTree {
     fn roots(&self) -> Vec<Section> {
-        vec!(Components, Containers, Layouts)
+        vec![Components, Containers, Layouts]
     }
 
     fn children(&self, parent: &Section) -> Vec<Section> {
         match parent {
-            Components => vec!(Buttons),
-            Containers => vec!(Forms),
-            Layouts => vec!(PageLayout),
+            Components => vec![Buttons],
+            Containers => vec![Forms],
+            Layouts => vec![PageLayout],
             _ => Vec::new(),
         }
     }
@@ -56,7 +54,7 @@ impl TreeModel<Section> for SectionTree {
 }
 
 fn build_tree() -> Tree<Section> {
-    let mut tree = Tree::new(SectionTree{});
+    let mut tree = Tree::new(SectionTree {});
 
     tree.set_click_event(|user_object| {
         dbg!(user_object);

@@ -1,7 +1,7 @@
 use crate::component::Component;
 use crate::event::Event;
-use crate::utils::create_id;
 use crate::event::EventValue::*;
+use crate::utils::create_id;
 use web_view::WebView;
 
 /// Trait to provide date for the tree
@@ -45,13 +45,13 @@ impl<U> TreeNode<U> {
             r#"<li id="{id}" data-caption="{caption}" data-collapsed="true">{children}</li>"#,
             id = self.id,
             caption = self.caption,
-            children = if self.has_children {"<ul></ul>"} else {""},
+            children = if self.has_children { "<ul></ul>" } else { "" },
         )
     }
 
     /// find a child nod recursively by its id.
     fn find_node(&self, id: &str) -> Option<&TreeNode<U>> {
-        if self.id==id {
+        if self.id == id {
             return Some(self);
         }
 
@@ -66,7 +66,7 @@ impl<U> TreeNode<U> {
 
     /// return a mutable child nod by its id.
     fn find_node_mut(&mut self, id: &str) -> Option<&mut TreeNode<U>> {
-        if self.id==id {
+        if self.id == id {
             return Some(self);
         }
 
@@ -150,10 +150,12 @@ impl<U> Tree<U> {
             }
             let parent_node = parent.unwrap();
 
-            let clean_js = format!("clear_node('{tree_id}', '{node_id}')",
-                                    tree_id=self.id,
-                                    node_id=parent_id);
-            let clean_result = webview.eval(clean_js.as_str());
+            let clean_js = format!(
+                "clear_node('{tree_id}', '{node_id}')",
+                tree_id = self.id,
+                node_id = parent_id
+            );
+            let _clean_result = webview.eval(clean_js.as_str());
 
             let user_object = &parent_node.user_object;
             let new_children = self.model.children(user_object);
@@ -196,7 +198,7 @@ impl<U> Component for Tree<U> {
                             self.click_event.as_ref().unwrap()(&child.unwrap().user_object);
                         }
                     }
-                },
+                }
                 NodeExpand(child_id) => {
                     self.create_children(child_id, webview);
                 }

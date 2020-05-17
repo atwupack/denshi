@@ -62,7 +62,7 @@ function add_tree_node(idTree, idParent, idNode, caption, hasChildren) {
 
     if (hasChildren) {
         tree.data('treeview').addTo(new_node, {
-            caption: 'dummy'
+            caption: ''
         });
         tree.data('treeview').toggleNode(new_node);
     }

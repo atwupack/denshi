@@ -1,19 +1,15 @@
-use denshi::component::layout::{Splitter, Orientation, Page};
-use denshi::component::tree::{Tree, TreeModel};
+use denshi::component::layout::{Orientation, Page, Splitter};
 use denshi::component::panel::Panel;
+use denshi::component::tree::{Tree, TreeModel};
 use denshi::App;
 use std::error::Error;
-use std::fs::File;
 
-use std::fs::{self, DirEntry};
-use std::path::{Path, PathBuf};
-
+use std::fs;
+use std::path::PathBuf;
 
 struct FileTreeModel {}
 
-impl FileTreeModel {
-
-}
+impl FileTreeModel {}
 
 impl TreeModel<PathBuf> for FileTreeModel {
     fn roots(&self) -> Vec<PathBuf> {
@@ -21,7 +17,6 @@ impl TreeModel<PathBuf> for FileTreeModel {
         let mut entries = Vec::new();
         for entry in dir {
             entries.push(entry.unwrap().path())
-
         }
         entries
     }
@@ -31,7 +26,6 @@ impl TreeModel<PathBuf> for FileTreeModel {
         let mut entries = Vec::new();
         for entry in dir {
             entries.push(entry.unwrap().path())
-
         }
         entries
     }
@@ -45,19 +39,21 @@ impl TreeModel<PathBuf> for FileTreeModel {
     }
 }
 
-
 fn main() -> Result<(), Box<dyn Error>> {
+    let file_tree = Tree::new(FileTreeModel {});
 
-    let file_tree = Tree::new(FileTreeModel{});
+    let mut tree_panel = Panel::new();
+    tree_panel.set_title("File Tree");
+    tree_panel.set_content(file_tree);
 
-    let file_panel = Panel::new();
+    let mut file_panel = Panel::new();
+    file_panel.set_title("Directory Content");
 
-    let split = Splitter::new(Orientation::HORIZONTAL, file_tree, file_panel);
+    let split = Splitter::new(Orientation::HORIZONTAL, tree_panel, file_panel);
 
     let mut page = Page::new();
     page.set_content(split);
 
     let app = App::new("File Browser", page);
     app.run()
-
 }

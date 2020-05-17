@@ -70,9 +70,7 @@ impl Component for Checkbox {
     }
 
     fn handle_event(&mut self, _webview: &mut WebView<()>, event: &Event) {
-        if event.id == self.id {
-            
-        }
+        if event.id == self.id {}
     }
 
     fn id(&self) -> &str {

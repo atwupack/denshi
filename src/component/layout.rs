@@ -179,7 +179,6 @@ impl Form {
 
 impl Component for Form {
     fn render(&mut self) -> String {
-
         let lines = self.render_lines();
         format!(
             "<form id=\"{id}\">{lines}</form>",
