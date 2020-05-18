@@ -43,7 +43,7 @@ impl App {
         );
 
         if cfg!(debug_assertions) {
-            remove_file("test.html")?;
+            let _result = remove_file("test.html");
             let mut file = File::create("test.html")?;
             file.write_all(html.as_bytes())?;
         }
