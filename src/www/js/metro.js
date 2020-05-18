@@ -24257,16 +24257,15 @@ Storage.prototype = {
 Storage.init = function(type){
 
     this.key = "";
-    this.storage = type ? type : window.localStorage;
+    this.storage = type ? type : window.sessionStorage;
 
     return this;
 };
 
 Storage.init.prototype = Storage.prototype;
 
-Metro['storage'] = Storage(window.localStorage);
+Metro['storage'] = Storage(window.sessionStorage);
 Metro['session'] = Storage(window.sessionStorage);
-
 
 var StreamerDefaultConfig = {
     streamerDeferred: 0,
