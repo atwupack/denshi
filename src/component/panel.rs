@@ -17,7 +17,6 @@ impl ScrollMode {
     }
 }
 
-
 pub struct Panel {
     id: String,
     title: Option<String>,

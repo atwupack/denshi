@@ -34,7 +34,7 @@ impl TreeModel<Section> for SectionTree {
         }
     }
 
-    fn label(&self, node: &Section) -> String {
+    fn caption(&self, node: &Section) -> String {
         match node {
             Components => "Components".into(),
             Buttons => "Buttons".into(),

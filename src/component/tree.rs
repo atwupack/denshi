@@ -11,7 +11,7 @@ pub trait TreeModel<U> {
     /// get a node's children
     fn children(&self, parent: &U) -> Vec<U>;
     // get the label to be displayed for a node.
-    fn label(&self, node: &U) -> String;
+    fn caption(&self, node: &U) -> String;
     /// has this nod children
     fn has_children(&self, node: &U) -> bool;
 }
@@ -103,7 +103,7 @@ impl<U> Tree<U> {
     }
 
     fn create_tree_node(&self, node_object: U) -> TreeNode<U> {
-        let caption = self.model.label(&node_object);
+        let caption = self.model.caption(&node_object);
         let has_children = self.model.has_children(&node_object);
         TreeNode::new(caption, node_object, has_children)
     }

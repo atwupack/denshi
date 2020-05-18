@@ -7,6 +7,8 @@ use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 use denshi::component::button::Button;
+use systemstat::{System, Platform};
+
 
 struct FileTreeModel {}
 
@@ -14,10 +16,17 @@ impl FileTreeModel {}
 
 impl TreeModel<PathBuf> for FileTreeModel {
     fn roots(&self) -> Vec<PathBuf> {
-        let dir = fs::read_dir("/").unwrap();
+
         let mut entries = Vec::new();
-        for entry in dir {
-            entries.push(entry.unwrap().path())
+
+        let sys = System::new();
+        match sys.mounts() {
+            Ok(mounts) => {
+                for mount in mounts.iter() {
+                    entries.push(mount.fs_mounted_on.as_str().into());
+                }
+            }
+            Err(x) => { }
         }
         entries
     }
@@ -31,8 +40,13 @@ impl TreeModel<PathBuf> for FileTreeModel {
         entries
     }
 
-    fn label(&self, node: &PathBuf) -> String {
-        node.file_name().unwrap().to_str().unwrap().into()
+    fn caption(&self, node: &PathBuf) -> String {
+        if node.file_name().is_some() {
+            node.file_name().unwrap().to_str().unwrap().into()
+        }
+        else {
+            node.as_os_str().to_str().unwrap().into()
+        }
     }
 
     fn has_children(&self, node: &PathBuf) -> bool {
