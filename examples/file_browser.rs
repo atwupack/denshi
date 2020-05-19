@@ -32,10 +32,13 @@ impl TreeModel<PathBuf> for FileTreeModel {
     }
 
     fn children(&self, parent: &PathBuf) -> Vec<PathBuf> {
-        let dir = fs::read_dir(parent).unwrap();
         let mut entries = Vec::new();
-        for entry in dir {
-            entries.push(entry.unwrap().path())
+        let read = fs::read_dir(parent);
+        if read.is_ok() {
+            let dir = read.unwrap();
+            for entry in dir {
+                entries.push(entry.unwrap().path())
+            }
         }
         entries
     }
@@ -68,6 +71,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut page = Page::new();
     page.set_content(split);
 
-    let app = App::new("File Browser", page);
+    let mut app = App::new("File Browser", page);
     app.run()
 }

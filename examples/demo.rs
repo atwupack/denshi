@@ -117,6 +117,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     page.set_header(menu);
     page.set_content(main_split);
 
-    let app = App::new("Demo", page);
+    let mut app = App::new("Demo", page);
     app.run()
 }

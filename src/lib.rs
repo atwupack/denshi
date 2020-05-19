@@ -3,7 +3,12 @@ use crate::event::Event;
 use std::error::Error;
 use std::fs::{remove_file, File};
 use std::io::Write;
-use web_view::Content;
+use web_view::{Content, WVResult};
+
+#[cfg(feature="use-local-server")]
+use tiny_http::{Server, Response, Header, StatusCode};
+#[cfg(feature="use-local-server")]
+use port_check::free_local_port;
 
 pub mod component;
 pub mod event;
@@ -32,7 +37,7 @@ impl App {
         }
     }
 
-    pub fn run(mut self) -> Result<(), Box<dyn Error>> {
+    fn build_html(&mut self) -> Result<String, Box<dyn Error>> {
         let html = format!(
             include_str!("www/html/app.html"),
             eventjs = include_str!("www/js/event.js"),
@@ -48,10 +53,14 @@ impl App {
             file.write_all(html.as_bytes())?;
         }
 
+        Ok(html)
+    }
+
+    fn run_web_view(&mut self, content: Content<String>) -> WVResult  {
         let ref title = self.title.clone();
 
         web_view::builder()
-            .content(Content::Html(html))
+            .content(content)
             .size(800, 600)
             .resizable(true)
             .debug(true)
@@ -63,7 +72,41 @@ impl App {
                 Ok(())
             })
             .title(title.as_str())
-            .run()?;
+            .run()
+    }
+
+    #[cfg(not(feature="use-local-server"))]
+    pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
+        let html = self.build_html()?;
+
+        self.run_web_view(Content::Html(html))?;
+
+        Ok(())
+    }
+
+    #[cfg(feature="use-local-server")]
+    pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
+        let html = self.build_html()?;
+
+        let new_port = free_local_port().unwrap();
+
+        dbg!("Using port {}", new_port);
+
+        let html_clone = html.clone();
+
+        let handle = std::thread::spawn(move || {
+            let server = Server::http(format!("localhost:{}", new_port)).unwrap();
+            for req in  server.incoming_requests() {
+                let mut resp = Response::new(StatusCode::from(200), Vec::new(), html_clone.as_bytes(), None, None);
+                let header = Header::from_bytes(&b"Content-Type"[..], &b"text/html; charset=utf-8   "[..]).unwrap();
+                resp.add_header(header);
+                req.respond(resp);
+            }
+        });
+
+
+        self.run_web_view(Content::Url(format!("http://localhost:{port}", port=new_port)))?;
+
         Ok(())
     }
 }
