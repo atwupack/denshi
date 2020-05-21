@@ -4,11 +4,12 @@ use denshi::component::tree::{Tree, TreeModel};
 use denshi::App;
 use std::error::Error;
 
+use denshi::component::button::Button;
+use log::LevelFilter;
+use simplelog::{Config, SimpleLogger};
 use std::fs;
 use std::path::PathBuf;
-use denshi::component::button::Button;
-use systemstat::{System, Platform};
-
+use systemstat::{Platform, System};
 
 struct FileTreeModel {}
 
@@ -16,7 +17,6 @@ impl FileTreeModel {}
 
 impl TreeModel<PathBuf> for FileTreeModel {
     fn roots(&self) -> Vec<PathBuf> {
-
         let mut entries = Vec::new();
 
         let sys = System::new();
@@ -26,7 +26,7 @@ impl TreeModel<PathBuf> for FileTreeModel {
                     entries.push(mount.fs_mounted_on.as_str().into());
                 }
             }
-            Err(x) => { }
+            Err(x) => {}
         }
         entries
     }
@@ -46,8 +46,7 @@ impl TreeModel<PathBuf> for FileTreeModel {
     fn caption(&self, node: &PathBuf) -> String {
         if node.file_name().is_some() {
             node.file_name().unwrap().to_str().unwrap().into()
-        }
-        else {
+        } else {
             node.as_os_str().to_str().unwrap().into()
         }
     }
@@ -58,6 +57,9 @@ impl TreeModel<PathBuf> for FileTreeModel {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // init logging
+    SimpleLogger::init(LevelFilter::Debug, Config::default())?;
+
     let file_tree = Tree::new(FileTreeModel {});
 
     let mut tree_panel = Panel::new(file_tree);

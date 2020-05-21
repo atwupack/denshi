@@ -1,14 +1,15 @@
 use crate::component::Component;
 use crate::event::Event;
+use log::debug;
 use std::error::Error;
 use std::fs::{remove_file, File};
 use std::io::Write;
 use web_view::{Content, WVResult};
 
-#[cfg(feature="use-local-server")]
-use tiny_http::{Server, Response, Header, StatusCode};
-#[cfg(feature="use-local-server")]
+#[cfg(feature = "use-local-server")]
 use port_check::free_local_port;
+#[cfg(feature = "use-local-server")]
+use tiny_http::{Header, Response, Server, StatusCode};
 
 pub mod component;
 pub mod event;
@@ -56,7 +57,7 @@ impl App {
         Ok(html)
     }
 
-    fn run_web_view(&mut self, content: Content<String>) -> WVResult  {
+    fn run_web_view(&mut self, content: Content<String>) -> WVResult {
         let ref title = self.title.clone();
 
         web_view::builder()
@@ -67,7 +68,7 @@ impl App {
             .user_data(())
             .invoke_handler(|webview, arg| {
                 let event: Event = serde_json::from_str(arg).unwrap();
-                dbg!(&event);
+                debug!("Received event {:?}", &event);
                 self.content.handle_event(webview, &event);
                 Ok(())
             })
@@ -75,7 +76,7 @@ impl App {
             .run()
     }
 
-    #[cfg(not(feature="use-local-server"))]
+    #[cfg(not(feature = "use-local-server"))]
     pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
         let html = self.build_html()?;
 
@@ -84,7 +85,7 @@ impl App {
         Ok(())
     }
 
-    #[cfg(feature="use-local-server")]
+    #[cfg(feature = "use-local-server")]
     pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
         let html = self.build_html()?;
 
@@ -96,16 +97,26 @@ impl App {
 
         let handle = std::thread::spawn(move || {
             let server = Server::http(format!("localhost:{}", new_port)).unwrap();
-            for req in  server.incoming_requests() {
-                let mut resp = Response::new(StatusCode::from(200), Vec::new(), html_clone.as_bytes(), None, None);
-                let header = Header::from_bytes(&b"Content-Type"[..], &b"text/html; charset=utf-8   "[..]).unwrap();
+            for req in server.incoming_requests() {
+                let mut resp = Response::new(
+                    StatusCode::from(200),
+                    Vec::new(),
+                    html_clone.as_bytes(),
+                    None,
+                    None,
+                );
+                let header =
+                    Header::from_bytes(&b"Content-Type"[..], &b"text/html; charset=utf-8   "[..])
+                        .unwrap();
                 resp.add_header(header);
                 req.respond(resp);
             }
         });
 
-
-        self.run_web_view(Content::Url(format!("http://localhost:{port}", port=new_port)))?;
+        self.run_web_view(Content::Url(format!(
+            "http://localhost:{port}",
+            port = new_port
+        )))?;
 
         Ok(())
     }

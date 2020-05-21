@@ -2,6 +2,7 @@ use crate::component::Component;
 use crate::event::Event;
 use crate::event::EventValue::*;
 use crate::utils::create_id;
+use log::warn;
 use web_view::WebView;
 
 /// Trait to provide date for the tree
@@ -143,12 +144,10 @@ impl<U> Tree<U> {
     }
 
     fn create_children(&mut self, parent_id: &str, webview: &mut WebView<()>) {
-        let parent = self.find_node(parent_id);
-        if parent.is_some() {
-            if parent.unwrap().children_loaded {
+        if let Some(parent_node) = self.find_node(parent_id) {
+            if parent_node.children_loaded {
                 return;
             }
-            let parent_node = parent.unwrap();
 
             let clean_js = format!(
                 "clear_node('{tree_id}', '{node_id}')",
@@ -192,11 +191,14 @@ impl<U> Component for Tree<U> {
         if event.id == self.id {
             match &event.value {
                 ChildClicked(child_id) => {
-                    if self.click_event.is_some() {
-                        let child = self.find_node(child_id);
-                        if child.is_some() {
-                            self.click_event.as_ref().unwrap()(&child.unwrap().user_object);
+                    if let Some(listener) = &self.click_event {
+                        if let Some(child) = self.find_node(child_id) {
+                            listener(&child.user_object);
+                        } else {
+                            warn!(target: "tree" , "Could not find child with ID {}", child_id);
                         }
+                    } else {
+                        warn!(target: "tree" , "No listener for tree with ID {}", self.id);
                     }
                 }
                 NodeExpand(child_id) => {

@@ -1,8 +1,10 @@
 use crate::component::Component;
 use crate::event::Event;
 use crate::utils::create_id;
+use log::warn;
 use web_view::WebView;
 
+/// Standard button to be pressed
 pub struct Button {
     id: String,
     label: String,
@@ -34,9 +36,10 @@ impl Component for Button {
 
     fn handle_event(&mut self, _webview: &mut WebView<()>, event: &Event) {
         if event.id == self.id {
-            match &self.click_event {
-                Some(listener) => listener(),
-                None => (),
+            if let Some(listener) = &self.click_event {
+                listener();
+            } else {
+                warn!(target: "button" , "No listener for button with ID {}", self.id);
             }
         }
     }

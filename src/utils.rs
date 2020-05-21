@@ -1,9 +1,9 @@
-use uuid::Uuid;
 use crate::component::Component;
+use nanoid::nanoid;
 
 /// Create a new id for a component.
 pub fn create_id() -> String {
-    format!("id{id}", id = Uuid::new_v4())
+    format!("id-{id}", id = nanoid!())
 }
 
 /// Create a new id with suffix for a component.

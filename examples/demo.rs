@@ -6,6 +6,8 @@ use denshi::component::panel::Panel;
 use denshi::component::text::{TextArea, TextField};
 use denshi::component::tree::{Tree, TreeModel};
 use denshi::App;
+use log::{debug, LevelFilter};
+use simplelog::{Config, SimpleLogger};
 use std::error::Error;
 
 #[derive(Debug)]
@@ -57,7 +59,7 @@ fn build_tree() -> Tree<Section> {
     let mut tree = Tree::new(SectionTree {});
 
     tree.set_click_event(|user_object| {
-        dbg!(user_object);
+        debug!("Clicked node {:?}", user_object);
     });
 
     tree
@@ -68,7 +70,7 @@ fn build_form() -> Form {
     let mut form = Form::new();
     let mut button = Button::new("Test Button");
     button.set_click_event(|| {
-        dbg!("Clicked");
+        debug!("Clicked test button");
     });
     let text = TextField::new("Enter Name: ");
 
@@ -96,6 +98,9 @@ fn build_text_area() -> TextArea {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // init logging
+    SimpleLogger::init(LevelFilter::Debug, Config::default())?;
+
     // create menu
     let mut menu = MenuBar::new();
     menu.add_entry("File");
