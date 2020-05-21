@@ -8,7 +8,7 @@ pub fn create_id() -> String {
 
 /// Create a new id with suffix for a component.
 pub fn create_suffix_id(suffix: &str) -> String {
-    format!("id{id}{suffix}", id = Uuid::new_v4(), suffix = suffix)
+    format!("id-{id}-{suffix}", id = nanoid!(), suffix = suffix)
 }
 
 /// create a standard div containing a component.
