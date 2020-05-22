@@ -1,6 +1,6 @@
 use crate::component::Component;
 use crate::event::Event;
-use log::debug;
+use log::{debug, info};
 use std::error::Error;
 use std::fs::{remove_file, File};
 use std::io::Write;
@@ -91,7 +91,7 @@ impl App {
 
         let new_port = free_local_port().unwrap();
 
-        dbg!("Using port {}", new_port);
+        info!("Using port {}.", new_port);
 
         let html_clone = html.clone();
 

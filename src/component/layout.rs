@@ -45,8 +45,8 @@ impl Component for Splitter {
 
         format!(
             r#"<div id="{id}" data-gutter-size="{gutter}" data-role="splitter" class="h-100" {split_mode}>
-                      <div class="d-flex flex-justify-start flex-align-start">{first}</div>
-                      <div class="d-flex flex-column flex-justify-start flex-align-start">{second}</div>
+                      <div>{first}</div>
+                      <div>{second}</div>
                    </div>"#,
             id = self.id,
             first = self.first.render(),
