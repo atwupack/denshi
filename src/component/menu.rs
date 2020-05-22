@@ -48,8 +48,8 @@ impl Component for MenuBar {
 
     fn handle_event(&mut self, _webview: &mut WebView<()>, _event: &Event) {}
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }
 

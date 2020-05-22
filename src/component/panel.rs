@@ -72,7 +72,7 @@ impl Component for Panel {
         self.content.handle_event(webview, event)
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }

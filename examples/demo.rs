@@ -9,6 +9,7 @@ use denshi::App;
 use log::{debug, LevelFilter};
 use simplelog::{Config, SimpleLogger};
 use std::error::Error;
+use denshi::component::CompRef;
 
 #[derive(Debug)]
 enum Section {
@@ -114,8 +115,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     tabs.add_tab("Splitter", build_splitter());
     tabs.add_tab("Text Area", build_text_area());
 
+    // create tree
+    let tree = build_tree();
+    let tree_ref = CompRef::new(tree);
+
     // create split pane
-    let mut main_split = Splitter::new(Orientation::HORIZONTAL, build_tree(), tabs);
+    let mut main_split = Splitter::new(Orientation::HORIZONTAL, tree_ref.clone(), tabs);
     main_split.set_gutter_size(10);
 
     let mut page = Page::new();

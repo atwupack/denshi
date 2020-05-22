@@ -44,8 +44,8 @@ impl Component for Button {
         }
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }
 
@@ -76,7 +76,7 @@ impl Component for Checkbox {
         if event.id == self.id {}
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }

@@ -209,7 +209,7 @@ impl<U> Component for Tree<U> {
         }
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }

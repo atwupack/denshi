@@ -61,8 +61,8 @@ impl Component for Splitter {
         self.second.handle_event(webview, event);
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }
 
@@ -140,8 +140,8 @@ impl Component for Page {
         }
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }
 
@@ -193,8 +193,8 @@ impl Component for Form {
         }
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }
 
@@ -272,7 +272,7 @@ impl Component for TabPane {
         }
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }

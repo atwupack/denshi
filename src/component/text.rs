@@ -27,8 +27,8 @@ impl Component for TextArea {
         }
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }
 
@@ -61,7 +61,7 @@ impl Component for TextField {
         }
     }
 
-    fn id(&self) -> &str {
-        &*self.id
+    fn id(&self) -> String {
+        self.id.clone()
     }
 }
