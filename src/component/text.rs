@@ -2,6 +2,7 @@ use crate::component::Component;
 use crate::event::Event;
 use crate::utils::create_id;
 use web_view::WebView;
+use log::debug;
 
 pub struct TextArea {
     id: String,
@@ -23,7 +24,7 @@ impl Component for TextArea {
 
     fn handle_event(&mut self, _webview: &mut WebView<()>, event: &Event) {
         if event.id == self.id {
-            dbg!(event);
+            debug!(target: "textarea", "Received event: {:?}", event);
         }
     }
 
@@ -57,7 +58,7 @@ impl Component for TextField {
 
     fn handle_event(&mut self, _webview: &mut WebView<()>, event: &Event) {
         if event.id == self.id {
-            dbg!(event);
+            debug!(target: "textfield", "Received event: {:?}", event);
         }
     }
 

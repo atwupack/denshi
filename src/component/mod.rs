@@ -1,8 +1,7 @@
 use crate::event::Event;
 use web_view::WebView;
 use std::rc::Rc;
-use std::cell::{RefCell, Ref};
-use std::borrow::Borrow;
+use std::cell::RefCell;
 use std::ops::{DerefMut, Deref};
 
 pub mod button;
