@@ -26,3 +26,5 @@ pub fn render_components(content: &mut Vec<Box<dyn Component>>) -> String {
     }
     result
 }
+
+

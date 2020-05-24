@@ -1,5 +1,5 @@
 use crate::component::Component;
-use crate::event::Event;
+use crate::event::{Event, EventBroker};
 use log::{debug, info};
 use std::error::Error;
 use std::fs::{remove_file, File};
@@ -10,6 +10,11 @@ use web_view::{Content, WVResult};
 use port_check::free_local_port;
 #[cfg(feature = "use-local-server")]
 use tiny_http::{Header, Response, Server, StatusCode};
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::any::{Any, TypeId};
+use crate::AppError::NoAppContentError;
+use std::fmt;
 
 pub mod component;
 pub mod event;
@@ -25,27 +30,59 @@ const METRO_CSS: &str = include_str!("www/css/metro-all.css");
 #[cfg(not(debug_assertions))]
 const METRO_CSS: &str = include_str!("www/css/metro-all.min.css");
 
+#[derive(Clone)]
 pub struct App {
     title: String,
-    content: Box<dyn Component>,
+    content: Option<Rc<RefCell<dyn Component>>>,
+    event_broker: Rc<RefCell<EventBroker>>,
+}
+
+#[derive(Debug)]
+pub enum AppError {
+    NoAppContentError,
+}
+
+impl Error for AppError {}
+impl fmt::Display for AppError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "No content defined for this app.")
+    }
 }
 
 impl App {
-    pub fn new(title: impl Into<String>, content: impl Component + 'static) -> Self {
+    pub fn new(title: impl Into<String>) -> Self {
         App {
             title: title.into(),
-            content: Box::new(content),
+            content: None,
+            event_broker: Rc::new(RefCell::new(EventBroker::new())),
         }
     }
 
+    pub fn set_content(&mut self, content: impl Component + 'static) {
+        self.content = Some(Rc::new(RefCell::new(content)))
+    }
+
+    pub fn send<E: Any>(&self, event: &E) {
+        self.event_broker.borrow().send(event)
+    }
+
+    pub fn subscribe<F: Fn(&E) + 'static, E: Any>(&self, listener: F) {
+        self.event_broker.borrow_mut().subscribe(listener)
+    }
+
     fn build_html(&mut self) -> Result<String, Box<dyn Error>> {
+
+        if self.content.is_none() {
+            return Err(Box::new(NoAppContentError));
+        }
+
         let html = format!(
             include_str!("www/html/app.html"),
             eventjs = include_str!("www/js/event.js"),
             metrojs = METRO_JS,
             metrocss = METRO_CSS,
             denshicss = include_str!("www/css/denshi.css"),
-            content = self.content.render()
+            content = self.content.as_ref().unwrap().borrow_mut().render()
         );
 
         if cfg!(debug_assertions) {
@@ -57,8 +94,12 @@ impl App {
         Ok(html)
     }
 
-    fn run_web_view(&mut self, content: Content<String>) -> WVResult {
+    fn run_web_view(&mut self, content: Content<String>) -> Result<(), Box<dyn Error>> {
         let ref title = self.title.clone();
+
+        if self.content.is_none() {
+            return Err(Box::new(NoAppContentError));
+        }
 
         web_view::builder()
             .content(content)
@@ -69,11 +110,12 @@ impl App {
             .invoke_handler(|webview, arg| {
                 let event: Event = serde_json::from_str(arg).unwrap();
                 debug!("Received event {:?}", &event);
-                self.content.handle_event(webview, &event);
+                self.content.as_ref().unwrap().borrow_mut().handle_event(webview, &event);
                 Ok(())
             })
             .title(title.as_str())
-            .run()
+            .run()?;
+        Ok(())
     }
 
     #[cfg(not(feature = "use-local-server"))]

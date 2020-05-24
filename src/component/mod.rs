@@ -1,7 +1,7 @@
 use crate::event::Event;
 use web_view::WebView;
 use std::rc::Rc;
-use std::cell::RefCell;
+use std::cell::{RefCell, RefMut};
 use std::ops::{DerefMut, Deref};
 
 pub mod button;
@@ -29,6 +29,11 @@ impl CompRef {
     pub fn new(comp: impl Component + 'static) -> Self {
         CompRef(Rc::new(RefCell::new(comp)))
     }
+
+    pub fn component(&self) -> RefMut<dyn Component> {
+        let cell: &RefCell<dyn Component> = &self.0;
+        cell.borrow_mut()
+    }
 }
 
 impl Component for CompRef {
@@ -52,6 +57,7 @@ impl Component for CompRef {
         let c = rm.deref();
         c.id().clone()
     }
+
 }
 
 

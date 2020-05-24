@@ -73,6 +73,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut page = Page::new();
     page.set_content(split);
 
-    let mut app = App::new("File Browser", page);
+    let mut app = App::new("File Browser");
+    app.set_content(page);
     app.run()
 }

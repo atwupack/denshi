@@ -10,6 +10,9 @@ use log::{debug, LevelFilter};
 use simplelog::{Config, SimpleLogger};
 use std::error::Error;
 use denshi::component::CompRef;
+use denshi::event::EventBroker;
+use std::any::{Any, TypeId};
+
 
 #[derive(Debug)]
 enum Section {
@@ -57,13 +60,7 @@ impl TreeModel<Section> for SectionTree {
 }
 
 fn build_tree() -> Tree<Section> {
-    let mut tree = Tree::new(SectionTree {});
-
-    tree.set_click_event(|user_object| {
-        debug!("Clicked node {:?}", user_object);
-    });
-
-    tree
+    Tree::new(SectionTree {})
 }
 
 fn build_form() -> Form {
@@ -99,6 +96,9 @@ fn build_text_area() -> TextArea {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
+
+    let mut app = App::new("Demo");
+
     // init logging
     SimpleLogger::init(LevelFilter::Debug, Config::default())?;
 
@@ -116,17 +116,26 @@ fn main() -> Result<(), Box<dyn Error>> {
     tabs.add_tab("Text Area", build_text_area());
 
     // create tree
-    let tree = build_tree();
+    let mut tree = build_tree();
+    let app_clone = app.clone();
+    tree.set_click_event(move |section| {
+        app_clone.send(section)
+    });
     let tree_ref = CompRef::new(tree);
 
     // create split pane
-    let mut main_split = Splitter::new(Orientation::HORIZONTAL, tree_ref.clone(), tabs);
-    main_split.set_gutter_size(10);
+    let main_split = Splitter::new(Orientation::HORIZONTAL, tree_ref.clone(), tabs);
+
+    app.subscribe(|event: &Section| {
+        debug!("Received event: {:?}", event);
+    });
+
+    let split_ref = CompRef::new(main_split);
 
     let mut page = Page::new();
     page.set_header(menu);
-    page.set_content(main_split);
+    page.set_content(split_ref);
 
-    let mut app = App::new("Demo", page);
+    app.set_content(page);
     app.run()
 }
