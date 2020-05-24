@@ -93,4 +93,22 @@ mod tests {
 
         dbg!(serde_json::to_string(&event).unwrap());
     }
+
+    #[derive(Debug)]
+    enum TestEventEnum {
+        Event1,
+        Event2,
+    }
+
+    #[test]
+    fn test_event_broker() {
+
+        let mut event_broker = EventBroker::new();
+        event_broker.subscribe(|event: &TestEventEnum| {
+            dbg!(event);
+        });
+
+        event_broker.send(&TestEventEnum::Event1);
+        event_broker.send(&TestEventEnum::Event2);
+    }
 }
