@@ -30,6 +30,10 @@ impl CompRef {
         CompRef(Rc::new(RefCell::new(comp)))
     }
 
+    pub fn new_from_rc(comp_rc: &Rc<RefCell<impl Component + 'static>>) -> Self {
+        CompRef(comp_rc.clone())
+    }
+
     pub fn component(&self) -> RefMut<dyn Component> {
         let cell: &RefCell<dyn Component> = &self.0;
         cell.borrow_mut()

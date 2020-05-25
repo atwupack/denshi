@@ -12,6 +12,8 @@ use std::error::Error;
 use denshi::component::CompRef;
 use denshi::event::EventBroker;
 use std::any::{Any, TypeId};
+use std::rc::Rc;
+use std::cell::RefCell;
 
 
 #[derive(Debug)]
@@ -125,12 +127,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // create split pane
     let main_split = Splitter::new(Orientation::HORIZONTAL, tree_ref.clone(), tabs);
+    let split_ref = Rc::new(RefCell::new(main_split));
 
     app.subscribe(|event: &Section| {
         debug!("Received event: {:?}", event);
+
     });
 
-    let split_ref = CompRef::new(main_split);
+    let split_ref = CompRef::new(CompRef::new_from_rc(&split_ref));
 
     let mut page = Page::new();
     page.set_header(menu);
