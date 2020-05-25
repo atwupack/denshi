@@ -4,7 +4,7 @@ use log::{debug, info};
 use std::error::Error;
 use std::fs::{remove_file, File};
 use std::io::Write;
-use web_view::{Content, WVResult};
+use web_view::{Content, WebView};
 
 #[cfg(feature = "use-local-server")]
 use port_check::free_local_port;
@@ -12,7 +12,7 @@ use port_check::free_local_port;
 use tiny_http::{Header, Response, Server, StatusCode};
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::any::{Any, TypeId};
+use std::any::Any;
 use crate::AppError::NoAppContentError;
 use std::fmt;
 
@@ -62,11 +62,11 @@ impl App {
         self.content = Some(Rc::new(RefCell::new(content)))
     }
 
-    pub fn send<E: Any>(&self, event: &E) {
-        self.event_broker.borrow().send(event)
+    pub fn send<E: Any>(&self, webview: &mut WebView<()>, event: &E) {
+        self.event_broker.borrow().send(webview, event)
     }
 
-    pub fn subscribe<F: Fn(&E) + 'static, E: Any>(&self, listener: F) {
+    pub fn subscribe<F: Fn(&mut WebView<()>, &E) + 'static, E: Any>(&self, listener: F) {
         self.event_broker.borrow_mut().subscribe(listener)
     }
 

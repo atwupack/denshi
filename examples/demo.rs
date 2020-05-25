@@ -10,8 +10,6 @@ use log::{debug, LevelFilter};
 use simplelog::{Config, SimpleLogger};
 use std::error::Error;
 use denshi::component::CompRef;
-use denshi::event::EventBroker;
-use std::any::{Any, TypeId};
 use std::rc::Rc;
 use std::cell::RefCell;
 
@@ -120,8 +118,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // create tree
     let mut tree = build_tree();
     let app_clone = app.clone();
-    tree.set_click_event(move |section| {
-        app_clone.send(section)
+    tree.set_click_event(move |webview, section| {
+        app_clone.send(webview, section)
     });
     let tree_ref = CompRef::new(tree);
 
@@ -129,7 +127,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let main_split = Splitter::new(Orientation::HORIZONTAL, tree_ref.clone(), tabs);
     let split_ref = Rc::new(RefCell::new(main_split));
 
-    app.subscribe(|event: &Section| {
+    app.subscribe(|_webview, event: &Section| {
         debug!("Received event: {:?}", event);
 
     });

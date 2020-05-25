@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::any::{Any, TypeId};
 use std::collections::HashMap;
+use web_view::WebView;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum EventValue {
@@ -19,7 +20,7 @@ pub struct Event {
 }
 
 pub struct EventBroker {
-    listeners: HashMap<TypeId, Vec<Box<dyn Fn(&dyn Any)>>>,
+    listeners: HashMap<TypeId, Vec<Box<dyn Fn(&mut WebView<()>, &dyn Any)>>>,
 }
 
 impl EventBroker {
@@ -29,27 +30,27 @@ impl EventBroker {
         }
     }
 
-    pub fn send<E: Any>(&self, event: &E) {
+    pub fn send<E: Any>(&self, webview: &mut WebView<()>, event: &E) {
         let type_id = TypeId::of::<E>();
         let listeners = self.listeners.get(&type_id);
         if let Some(l) = listeners {
             for item in l {
-                item(event);
+                item(webview, event);
             }
         }
     }
 
-    fn add_listener<F: Fn(&dyn Any) + 'static>(&mut self, type_id: TypeId, f: F) {
+    fn add_listener<F: Fn(&mut WebView<()>, &dyn Any) + 'static>(&mut self, type_id: TypeId, f: F) {
         let mut recvs = self.listeners.remove(&type_id).unwrap_or_default();
         recvs.push(Box::new(f));
         self.listeners.insert(type_id, recvs);
     }
 
-    pub fn subscribe<F: Fn(&E) + 'static, E: Any>(&mut self, f: F) {
+    pub fn subscribe<F: Fn(&mut WebView<()>, &E) + 'static, E: Any>(&mut self, f: F) {
         let type_id = TypeId::of::<E>();
-        self.add_listener(type_id, move |event| {
+        self.add_listener(type_id, move |webview, event| {
             let cast_message: &E = event.downcast_ref().unwrap();
-            f(cast_message);
+            f(webview, cast_message);
         });
     }
 }
@@ -104,11 +105,11 @@ mod tests {
     fn test_event_broker() {
 
         let mut event_broker = EventBroker::new();
-        event_broker.subscribe(|event: &TestEventEnum| {
+        event_broker.subscribe(|_webview, event: &TestEventEnum| {
             dbg!(event);
         });
 
-        event_broker.send(&TestEventEnum::Event1);
-        event_broker.send(&TestEventEnum::Event2);
+        // event_broker.send(&TestEventEnum::Event1);
+        // event_broker.send(&TestEventEnum::Event2);
     }
 }

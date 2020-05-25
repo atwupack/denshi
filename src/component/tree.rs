@@ -85,7 +85,7 @@ impl<U> TreeNode<U> {
 pub struct Tree<U> {
     id: String,
     roots: Vec<TreeNode<U>>,
-    click_event: Option<Box<dyn Fn(&U)>>,
+    click_event: Option<Box<dyn Fn(&mut WebView<()>, &U)>>,
     model: Box<dyn TreeModel<U>>,
 }
 
@@ -99,7 +99,7 @@ impl<U> Tree<U> {
         }
     }
 
-    pub fn set_click_event(&mut self, event: impl Fn(&U) + 'static) {
+    pub fn set_click_event(&mut self, event: impl Fn(&mut WebView<()>, &U) + 'static) {
         self.click_event = Some(Box::new(event));
     }
 
@@ -193,7 +193,7 @@ impl<U> Component for Tree<U> {
                 ChildClicked(child_id) => {
                     if let Some(listener) = &self.click_event {
                         if let Some(child) = self.find_node(child_id) {
-                            listener(&child.user_object);
+                            listener(webview, &child.user_object);
                         } else {
                             warn!(target: "tree" , "Could not find child with ID {}", child_id);
                         }
