@@ -27,4 +27,20 @@ pub fn render_components(content: &mut Vec<Box<dyn Component>>) -> String {
     result
 }
 
+enum Attribute {
+
+}
+
+pub struct AttributeBuilder {
+
+}
+
+impl AttributeBuilder {
+    pub fn new() -> Self {
+        AttributeBuilder {
+
+        }
+    }
+}
+
 

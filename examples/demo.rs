@@ -1,3 +1,4 @@
+#![windows_subsystem = "windows"]
 use crate::Section::{Buttons, Components, Containers, Forms, Layouts, PageLayout};
 use denshi::component::button::{Button, Checkbox};
 use denshi::component::layout::{Form, Orientation, Page, Splitter, TabPane};

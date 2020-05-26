@@ -1,3 +1,4 @@
+#![windows_subsystem = "windows"]
 use denshi::component::layout::{Orientation, Page, Splitter};
 use denshi::component::panel::Panel;
 use denshi::component::tree::{Tree, TreeModel};
