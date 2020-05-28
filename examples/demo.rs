@@ -4,7 +4,7 @@ use denshi::component::button::{Button, Checkbox};
 use denshi::component::layout::{Form, Orientation, Page, Splitter, TabPane};
 use denshi::component::menu::MenuBar;
 use denshi::component::panel::Panel;
-use denshi::component::text::{TextArea, TextField};
+use denshi::component::text::{TextArea, TextField, TextType};
 use denshi::component::tree::{Tree, TreeModel};
 use denshi::App;
 use log::{debug, LevelFilter};
@@ -72,10 +72,11 @@ fn build_form() -> Form {
         debug!("Clicked test button");
     });
     let text = TextField::new("Enter Name: ");
-
+    let password = TextField::new_with_type("Enter Password: ", TextType::Password {allow_reveal: true});
     let checkbox = Checkbox::new("Checkbox");
 
     form.add_line(text);
+    form.add_line(password);
     form.add_line(button);
     form.add_line(checkbox);
     form

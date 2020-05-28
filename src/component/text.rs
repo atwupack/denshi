@@ -46,9 +46,19 @@ pub enum TextType {
     /// Simple text field.
     Text,
     /// Text field for password input.
-    Password,
+    Password { allow_reveal: bool },
     /// Text field for emails.
     Email,
+}
+
+impl TextType {
+    fn to_attribute(&self) -> String {
+        match self {
+            TextType::Text => "type=\"text\"".into(),
+            TextType::Password { allow_reveal} => format!("type=\"password\" data-reveal-button=\"{reveal}\"", reveal = allow_reveal),
+            TextType::Email => "type=\"email\"".into(),
+        }
+    }
 }
 
 pub struct TextField {
@@ -81,10 +91,11 @@ impl TextField {
 impl Component for TextField {
     fn render(&mut self) -> String {
         format!(
-            r#"<input id="{id}" value="{value}" oninput="fire_value_changed('{id}')" data-on-clear-click="fire_value_changed('{id}')" type="text" data-role="input" data-prepend="{label}"/>"#,
+            r#"<input id="{id}" value="{value}" oninput="fire_value_changed('{id}')" data-on-clear-click="fire_value_changed('{id}')" {type_attr} data-role="input" data-prepend="{label}"/>"#,
             id = self.id,
             label = self.label,
             value = self.text,
+            type_attr = self.text_type.to_attribute(),
         )
     }
 
