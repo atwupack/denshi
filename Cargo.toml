@@ -25,3 +25,4 @@ port_check = { version = "0.1", optional = true }
 [dev-dependencies]
 systemstat = "0.1"
 simplelog = "0.8"
+enclose = "1.1"

@@ -4,6 +4,9 @@ use crate::event::EventValue::*;
 use crate::utils::create_id;
 use log::warn;
 use web_view::WebView;
+use std::rc::Rc;
+use std::cell::RefCell;
+use std::borrow::Borrow;
 
 /// Trait to provide date for the tree
 pub trait TreeModel<U> {
@@ -50,7 +53,7 @@ impl<U> TreeNode<U> {
         )
     }
 
-    /// find a child nod recursively by its id.
+    /// find a child node recursively by its id.
     fn find_node(&self, id: &str) -> Option<&TreeNode<U>> {
         if self.id == id {
             return Some(self);
@@ -59,13 +62,13 @@ impl<U> TreeNode<U> {
         for child in &self.nodes {
             let found_child = child.find_node(id);
             if found_child.is_some() {
-                return found_child;
+                return found_child.clone();
             }
         }
         None
     }
 
-    /// return a mutable child nod by its id.
+    /// return a mutable child node by its id.
     fn find_node_mut(&mut self, id: &str) -> Option<&mut TreeNode<U>> {
         if self.id == id {
             return Some(self);
@@ -82,25 +85,26 @@ impl<U> TreeNode<U> {
 }
 
 /// Tree widget
+#[derive(Clone)]
 pub struct Tree<U> {
     id: String,
-    roots: Vec<TreeNode<U>>,
-    click_event: Option<Box<dyn Fn(&mut WebView<()>, &U)>>,
-    model: Box<dyn TreeModel<U>>,
+    roots: Rc<RefCell<Vec<TreeNode<U>>>>,
+    click_event: Option<Rc<RefCell<dyn Fn(&mut WebView<()>, &U)>>>,
+    model: Rc<dyn TreeModel<U>>,
 }
 
 impl<U> Tree<U> {
     pub fn new(model: impl TreeModel<U> + 'static) -> Self {
         Tree {
             id: create_id(),
-            roots: Vec::new(),
+            roots: Rc::new(RefCell::new(Vec::new())),
             click_event: None,
-            model: Box::new(model),
+            model: Rc::new(model),
         }
     }
 
     pub fn set_click_event(&mut self, event: impl Fn(&mut WebView<()>, &U) + 'static) {
-        self.click_event = Some(Box::new(event));
+        self.click_event = Some(Rc::new(RefCell::new(event)));
     }
 
     fn create_tree_node(&self, node_object: U) -> TreeNode<U> {
@@ -111,19 +115,22 @@ impl<U> Tree<U> {
 
     fn render_roots(&mut self) -> String {
         for root in self.model.roots() {
-            self.roots.push(self.create_tree_node(root));
+            self.roots.borrow_mut().push(self.create_tree_node(root));
         }
 
         let mut s = String::new();
-        for root in &self.roots {
+        for root in &*self.roots.borrow_mut() {
             s.push_str(root.render_node().as_str());
         }
         s
     }
 
     /// find a tree node below the current roots.
-    fn find_node(&self, id: &str) -> Option<&TreeNode<U>> {
-        for child in &self.roots {
+    fn find_tree_node(&self, id: &str) -> Option<&TreeNode<U>> {
+
+        let roots = self.roots.borrow();
+
+        for child in &*roots {
             let found_child = child.find_node(id);
             if found_child.is_some() {
                 return found_child;
@@ -133,8 +140,8 @@ impl<U> Tree<U> {
     }
 
     /// find a mutable tree node below the current roots.
-    fn find_node_mut(&mut self, id: &str) -> Option<&mut TreeNode<U>> {
-        for child in &mut self.roots {
+    fn find_tree_node_mut(&mut self, id: &str) -> Option<&mut TreeNode<U>> {
+        for child in &mut *self.roots.borrow_mut() {
             let found_child = child.find_node_mut(id);
             if found_child.is_some() {
                 return found_child;
@@ -170,14 +177,14 @@ impl<U> Tree<U> {
                 if result.is_ok() {
                     let mut_child = self.find_node_mut(parent_id).unwrap();
                     mut_child.children_loaded = true;
-                    mut_child.nodes.push(new_node);
+                    mut_child.nodes.borrow_mut().push(new_node);
                 }
             }
         }
     }
 }
 
-impl<U> Component for Tree<U> {
+impl<U: Clone> Component for Tree<U> {
     fn render(&mut self) -> String {
         let roots = self.render_roots();
         format!(
@@ -193,7 +200,7 @@ impl<U> Component for Tree<U> {
                 ChildClicked(child_id) => {
                     if let Some(listener) = &self.click_event {
                         if let Some(child) = self.find_node(child_id) {
-                            listener(webview, &child.user_object);
+                            (listener.borrow_mut())(webview, &child.user_object);
                         } else {
                             warn!(target: "tree" , "Could not find child with ID {}", child_id);
                         }

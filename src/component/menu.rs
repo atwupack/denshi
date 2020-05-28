@@ -3,31 +3,34 @@ use crate::component::Component;
 use crate::event::Event;
 use crate::utils::create_id;
 use web_view::WebView;
+use std::rc::Rc;
+use std::cell::RefCell;
 
 enum MenuItem {
     Entry(String),
 }
 
+#[derive(Clone)]
 pub struct MenuBar {
     id: String,
-    entries: Vec<MenuItem>,
+    entries: Rc<RefCell<Vec<MenuItem>>>,
 }
 
 impl MenuBar {
     pub fn new() -> Self {
         MenuBar {
             id: create_id(),
-            entries: Vec::new(),
+            entries: Rc::new(RefCell::new(Vec::new())),
         }
     }
 
     pub fn add_entry(&mut self, label: impl Into<String>) {
-        self.entries.push(Entry(label.into()));
+        self.entries.borrow_mut().push(Entry(label.into()));
     }
 
     fn render_items(&self) -> String {
         let mut items = String::new();
-        for entry in &self.entries {
+        for entry in &*self.entries.borrow() {
             match entry {
                 Entry(label) => items.push_str(
                     format!("<li><a href=\"#\">{label}</a></li>", label = label).as_str(),
@@ -53,4 +56,3 @@ impl Component for MenuBar {
     }
 }
 
-pub struct Menu {}
