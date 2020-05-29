@@ -10,6 +10,7 @@ use denshi::App;
 use log::{debug, LevelFilter};
 use simplelog::{Config, SimpleLogger};
 use std::error::Error;
+use enclose::enclose;
 
 #[derive(Debug, Clone)]
 enum Section {
@@ -115,18 +116,16 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // create tree
     let mut tree = build_tree();
-    let app_clone = app.clone();
-    tree.set_click_event(move |webview, section| {
-        app_clone.send(webview, section)
-    });
+    tree.set_click_event(enclose!((app) move |webview, section| {
+        app.send(webview, section)
+    }));
 
     // create split pane
     let main_split = Splitter::new(Orientation::HORIZONTAL, tree.clone(), tabs);
 
-    app.subscribe(|_webview, event: &Section| {
-        debug!("Received event: {:?}", event);
-
-    });
+    app.subscribe(enclose!((main_split) move |_webview, event: &Section| {
+        
+    }));
 
     let mut page = Page::new();
     page.set_header(menu);
