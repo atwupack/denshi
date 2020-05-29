@@ -15,7 +15,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum Section {
     Components,
     Buttons,

@@ -125,33 +125,9 @@ impl<U> Tree<U> {
         s
     }
 
-    /// find a tree node below the current roots.
-    fn find_tree_node(&self, id: &str) -> Option<&TreeNode<U>> {
-
-        let roots = self.roots.borrow();
-
-        for child in &*roots {
-            let found_child = child.find_node(id);
-            if found_child.is_some() {
-                return found_child;
-            }
-        }
-        None
-    }
-
-    /// find a mutable tree node below the current roots.
-    fn find_tree_node_mut(&mut self, id: &str) -> Option<&mut TreeNode<U>> {
-        for child in &mut *self.roots.borrow_mut() {
-            let found_child = child.find_node_mut(id);
-            if found_child.is_some() {
-                return found_child;
-            }
-        }
-        None
-    }
-
     fn create_children(&mut self, parent_id: &str, webview: &mut WebView<()>) {
-        if let Some(parent_node) = self.find_node(parent_id) {
+        let mut roots = self.roots.borrow_mut();
+        if let Some(parent_node) = find_tree_node(roots.as_mut(), parent_id) {
             if parent_node.children_loaded {
                 return;
             }
@@ -175,13 +151,36 @@ impl<U> Tree<U> {
                                  has_children=new_node.has_children);
                 let result = webview.eval(js.as_str());
                 if result.is_ok() {
-                    let mut_child = self.find_node_mut(parent_id).unwrap();
+                    let mut_child = find_tree_node_mut(roots.as_mut(), parent_id).unwrap();
                     mut_child.children_loaded = true;
-                    mut_child.nodes.borrow_mut().push(new_node);
+                    mut_child.nodes.push(new_node);
                 }
             }
         }
     }
+}
+
+/// find a tree node below the current roots.
+fn find_tree_node<'a, U>(roots: &'a Vec<TreeNode<U>>, id: &str) -> Option<&'a TreeNode<U>> {
+
+    for child in roots {
+        let found_child = child.find_node(id);
+        if found_child.is_some() {
+            return found_child;
+        }
+    }
+    None
+}
+
+/// find a mutable tree node below the current roots.
+fn find_tree_node_mut<'a, U>(roots: &'a mut Vec<TreeNode<U>>, id: &str) -> Option<&'a mut TreeNode<U>> {
+    for child in roots {
+        let found_child = child.find_node_mut(id);
+        if found_child.is_some() {
+            return found_child;
+        }
+    }
+    None
 }
 
 impl<U: Clone> Component for Tree<U> {
@@ -199,7 +198,8 @@ impl<U: Clone> Component for Tree<U> {
             match &event.value {
                 ChildClicked(child_id) => {
                     if let Some(listener) = &self.click_event {
-                        if let Some(child) = self.find_node(child_id) {
+                        let mut roots = self.roots.borrow_mut();
+                        if let Some(child) = find_tree_node(roots.as_ref(), child_id) {
                             (listener.borrow_mut())(webview, &child.user_object);
                         } else {
                             warn!(target: "tree" , "Could not find child with ID {}", child_id);
