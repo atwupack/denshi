@@ -3,7 +3,7 @@ use crate::event::Event;
 use crate::utils::create_id;
 use web_view::WebView;
 use std::rc::Rc;
-use std::cell::{RefCell, Ref};
+use std::cell::RefCell;
 
 #[derive(Clone)]
 pub enum ScrollMode {

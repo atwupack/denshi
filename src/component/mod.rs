@@ -1,8 +1,5 @@
 use crate::event::Event;
 use web_view::WebView;
-use std::rc::Rc;
-use std::cell::{RefCell, RefMut};
-use std::ops::{DerefMut, Deref};
 
 pub mod button;
 pub mod layout;
@@ -21,48 +18,6 @@ pub trait Component {
     fn id(&self) -> String;
 }
 
-/// Reference to a component
-#[derive(Clone)]
-pub struct CompRef(Rc<RefCell<dyn Component>>);
-
-impl CompRef {
-    pub fn new(comp: impl Component + 'static) -> Self {
-        CompRef(Rc::new(RefCell::new(comp)))
-    }
-
-    pub fn new_from_rc(comp_rc: &Rc<RefCell<impl Component + 'static>>) -> Self {
-        CompRef(comp_rc.clone())
-    }
-
-    pub fn component(&self) -> RefMut<dyn Component> {
-        let cell: &RefCell<dyn Component> = &self.0;
-        cell.borrow_mut()
-    }
-}
-
-impl Component for CompRef {
-    fn render(&mut self) -> String {
-        let cell: &RefCell<dyn Component> = &self.0;
-        let mut rm = cell.borrow_mut();
-        let c = rm.deref_mut();
-        c.render()
-    }
-
-    fn handle_event(&mut self, webview: &mut WebView<()>, event: &Event) {
-        let cell: &RefCell<dyn Component> = &self.0;
-        let mut rm = cell.borrow_mut();
-        let c = rm.deref_mut();
-        c.handle_event(webview, event)
-    }
-
-    fn id(&self) -> String {
-        let cell: &RefCell<dyn Component> = &self.0;
-        let rm = cell.borrow();
-        let c = rm.deref();
-        c.id().clone()
-    }
-
-}
 
 
 

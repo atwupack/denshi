@@ -6,7 +6,6 @@ use log::warn;
 use web_view::WebView;
 use std::rc::Rc;
 use std::cell::RefCell;
-use std::borrow::Borrow;
 
 /// Trait to provide date for the tree
 pub trait TreeModel<U> {
@@ -198,7 +197,7 @@ impl<U: Clone> Component for Tree<U> {
             match &event.value {
                 ChildClicked(child_id) => {
                     if let Some(listener) = &self.click_event {
-                        let mut roots = self.roots.borrow_mut();
+                        let roots = self.roots.borrow_mut();
                         if let Some(child) = find_tree_node(roots.as_ref(), child_id) {
                             (listener.borrow_mut())(webview, &child.user_object);
                         } else {

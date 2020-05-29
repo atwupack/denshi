@@ -10,10 +10,6 @@ use denshi::App;
 use log::{debug, LevelFilter};
 use simplelog::{Config, SimpleLogger};
 use std::error::Error;
-use denshi::component::CompRef;
-use std::rc::Rc;
-use std::cell::RefCell;
-
 
 #[derive(Debug, Clone)]
 enum Section {
@@ -123,22 +119,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     tree.set_click_event(move |webview, section| {
         app_clone.send(webview, section)
     });
-    let tree_ref = CompRef::new(tree);
 
     // create split pane
-    let main_split = Splitter::new(Orientation::HORIZONTAL, tree_ref.clone(), tabs);
-    let split_ref = Rc::new(RefCell::new(main_split));
+    let main_split = Splitter::new(Orientation::HORIZONTAL, tree.clone(), tabs);
 
     app.subscribe(|_webview, event: &Section| {
         debug!("Received event: {:?}", event);
 
     });
 
-    let split_ref = CompRef::new(CompRef::new_from_rc(&split_ref));
-
     let mut page = Page::new();
     page.set_header(menu);
-    page.set_content(split_ref);
+    page.set_content(main_split);
 
     app.set_content(page);
     app.run()
