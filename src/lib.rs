@@ -33,7 +33,7 @@ const METRO_CSS: &str = include_str!("www/css/metro-all.min.css");
 #[derive(Clone)]
 pub struct App {
     title: String,
-    content: Option<Rc<RefCell<dyn Component>>>,
+    content: Rc<RefCell<Option<Box<dyn Component>>>>,
     event_broker: Rc<RefCell<EventBroker>>,
 }
 
@@ -53,13 +53,13 @@ impl App {
     pub fn new(title: impl Into<String>) -> Self {
         App {
             title: title.into(),
-            content: None,
+            content: Rc::new(RefCell::new(None)),
             event_broker: Rc::new(RefCell::new(EventBroker::new())),
         }
     }
 
-    pub fn set_content(&mut self, content: impl Component + 'static) {
-        self.content = Some(Rc::new(RefCell::new(content)))
+    pub fn set_content(&self, content: impl Component + 'static) {
+        self.content.borrow_mut().replace(Box::new(content));
     }
 
     pub fn send<E: Any>(&self, webview: &mut WebView<()>, event: &E) {
@@ -71,8 +71,9 @@ impl App {
     }
 
     fn build_html(&mut self) -> Result<String, Box<dyn Error>> {
+        let mut content = self.content.borrow_mut();
 
-        if self.content.is_none() {
+        if content.is_none() {
             return Err(Box::new(NoAppContentError));
         }
 
@@ -82,7 +83,7 @@ impl App {
             metrojs = METRO_JS,
             metrocss = METRO_CSS,
             denshicss = include_str!("www/css/denshi.css"),
-            content = self.content.as_ref().unwrap().borrow_mut().render()
+            content = content.as_mut().unwrap().render()
         );
 
         if cfg!(debug_assertions) {
@@ -94,15 +95,16 @@ impl App {
         Ok(html)
     }
 
-    fn run_web_view(&mut self, content: Content<String>) -> Result<(), Box<dyn Error>> {
+    fn run_web_view(&mut self, content_str: Content<String>) -> Result<(), Box<dyn Error>> {
         let ref title = self.title.clone();
+        let mut content = self.content.borrow_mut();
 
-        if self.content.is_none() {
+        if content.is_none() {
             return Err(Box::new(NoAppContentError));
         }
 
         web_view::builder()
-            .content(content)
+            .content(content_str)
             .size(800, 600)
             .resizable(true)
             .debug(true)
@@ -110,7 +112,7 @@ impl App {
             .invoke_handler(|webview, arg| {
                 let event: Event = serde_json::from_str(arg).unwrap();
                 debug!("Received event {:?}", &event);
-                self.content.as_ref().unwrap().borrow_mut().handle_event(webview, &event);
+                content.as_mut().unwrap().handle_event(webview, &event);
                 Ok(())
             })
             .title(title.as_str())
