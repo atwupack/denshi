@@ -1,4 +1,4 @@
-use crate::component::Component;
+use crate::component::{Component, ComponentManager};
 use crate::event::Event;
 use crate::utils::create_id;
 use web_view::WebView;
@@ -18,6 +18,8 @@ pub struct Splitter {
     orientation: Orientation,
     state: Rc<RefCell<SplitterState>>,
 }
+
+enum
 
 struct SplitterState {
     first: Box<dyn Component>,
@@ -86,11 +88,15 @@ pub struct Page {
     state: Rc<RefCell<PageState>>,
 }
 
-struct PageState {
-    header: Option<Box<dyn Component>>,
-    content: Option<Box<dyn Component>>,
-    footer: Option<Box<dyn Component>>,
+#[derive(PartialEq, Eq, Hash, Clone)]
+enum PagePosition {
+    Header,
+    Footer,
+    Content,
+}
 
+struct PageState {
+    comps: ComponentManager<PagePosition>,
 }
 
 impl Page {
@@ -98,23 +104,21 @@ impl Page {
         Page {
             id: create_id(),
             state: Rc::new(RefCell::new(PageState{
-                header: None,
-                content: None,
-                footer: None,
+                comps: ComponentManager::new(),
             })),
         }
     }
 
     pub fn set_content(&mut self, content: impl Component + 'static) {
-        self.state.borrow_mut().content = Some(Box::new(content))
+        self.state.borrow_mut().comps.set_component(PagePosition::Content, content);
     }
 
     pub fn set_header(&mut self, header: impl Component + 'static) {
-        self.state.borrow_mut().header = Some(Box::new(header))
+        self.state.borrow_mut().comps.set_component(PagePosition::Header, header);
     }
 
     pub fn set_footer(&mut self, footer: impl Component + 'static) {
-        self.state.borrow_mut().footer = Some(Box::new(footer))
+        self.state.borrow_mut().comps.set_component(PagePosition::Footer, footer);
     }
 }
 
@@ -127,26 +131,20 @@ impl Component for Page {
 
         let mut state = self.state.borrow_mut();
 
-        if state.header.is_some() {
-            components.push_str(&format!(
-                "<header>{header}</header>",
-                header = state.header.as_mut().unwrap().render()
-            ));
-        }
+        components.push_str(&format!(
+            "<header>{header}</header>",
+            header = state.comps.render_component(&PagePosition::Header)
+        ));
 
-        if state.content.is_some() {
-            components.push_str(&format!(
-                "<div class=\"h-100\">{content}</div>",
-                content = state.content.as_mut().unwrap().render()
-            ));
-        }
+        components.push_str(&format!(
+            "<div class=\"h-100\">{content}</div>",
+            content = state.comps.render_component(&PagePosition::Content)
+        ));
 
-        if state.footer.is_some() {
-            components.push_str(&format!(
-                "<footer>{footer}</footer>",
-                footer = state.footer.as_mut().unwrap().render()
-            ));
-        }
+        components.push_str(&format!(
+            "<footer>{footer}</footer>",
+            footer = state.comps.render_component(&PagePosition::Footer)
+        ));
 
         components.push_str("</div>");
         components
@@ -156,15 +154,7 @@ impl Component for Page {
 
         let mut state = self.state.borrow_mut();
 
-        if state.header.is_some() {
-            state.header.as_mut().unwrap().handle_event(webview, event);
-        }
-        if state.content.is_some() {
-            state.content.as_mut().unwrap().handle_event(webview, event);
-        }
-        if state.footer.is_some() {
-            state.footer.as_mut().unwrap().handle_event(webview, event);
-        }
+        state.comps.notify_all_components(webview, event);
     }
 
     fn id(&self) -> String {

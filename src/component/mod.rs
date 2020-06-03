@@ -55,6 +55,14 @@ impl<K: Eq + Hash + Clone> ComponentManager<K> {
         }
         comp_str
     }
+
+    pub fn notify_all_components(&mut self, webview: &mut WebView<()>, event: &Event) {
+        for value in self.components.values_mut() {
+            for comp in value {
+                comp.handle_event(webview, event)
+            }
+        }
+    }
 }
 
 
