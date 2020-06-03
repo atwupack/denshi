@@ -88,7 +88,7 @@ impl<U> TreeNode<U> {
 pub struct Tree<U> {
     id: String,
     roots: Rc<RefCell<Vec<TreeNode<U>>>>,
-    click_event: Option<Rc<RefCell<dyn Fn(&mut WebView<()>, &U)>>>,
+    click_event: Rc<RefCell<Option<Box<dyn Fn(&mut WebView<()>, &U)>>>>,
     model: Rc<dyn TreeModel<U>>,
 }
 
@@ -97,13 +97,13 @@ impl<U> Tree<U> {
         Tree {
             id: create_id(),
             roots: Rc::new(RefCell::new(Vec::new())),
-            click_event: None,
+            click_event: Rc::new(RefCell::new(None)),
             model: Rc::new(model),
         }
     }
 
-    pub fn set_click_event(&mut self, event: impl Fn(&mut WebView<()>, &U) + 'static) {
-        self.click_event = Some(Rc::new(RefCell::new(event)));
+    pub fn set_click_event(&self, event: impl Fn(&mut WebView<()>, &U) + 'static) {
+        self.click_event.borrow_mut().replace(Box::new(event));
     }
 
     fn create_tree_node(&self, node_object: U) -> TreeNode<U> {
@@ -196,10 +196,10 @@ impl<U: Clone> Component for Tree<U> {
         if event.id == self.id {
             match &event.value {
                 ChildClicked(child_id) => {
-                    if let Some(listener) = &self.click_event {
+                    if let Some(listener) = self.click_event.borrow_mut().as_ref() {
                         let roots = self.roots.borrow_mut();
                         if let Some(child) = find_tree_node(roots.as_ref(), child_id) {
-                            (listener.borrow_mut())(webview, &child.user_object);
+                            listener(webview, &child.user_object);
                         } else {
                             warn!(target: "tree" , "Could not find child with ID {}", child_id);
                         }

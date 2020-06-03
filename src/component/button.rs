@@ -11,7 +11,7 @@ use std::cell::RefCell;
 pub struct Button {
     id: String,
     state: Rc<RefCell<ButtonState>>,
-    click_event: Option<Rc<RefCell<dyn Fn()>>>,
+    click_event: Rc<RefCell<Option<Box<dyn Fn()>>>>,
 }
 
 struct ButtonState {
@@ -25,12 +25,12 @@ impl Button {
             state: Rc::new(RefCell::new(ButtonState {
                 label: label.into(),
             })) ,
-            click_event: None,
+            click_event: Rc::new(RefCell::new(None)),
         }
     }
 
-    pub fn set_click_event(&mut self, event: impl Fn() + 'static) {
-        self.click_event = Some(Rc::new(RefCell::new(event)));
+    pub fn set_click_event(&self, event: impl Fn() + 'static) {
+        self.click_event.borrow_mut().replace(Box::new(event));
     }
 }
 
@@ -45,8 +45,8 @@ impl Component for Button {
 
     fn handle_event(&mut self, _webview: &mut WebView<()>, event: &Event) {
         if event.id == self.id {
-            if let Some(listener) = &self.click_event {
-                (listener.borrow())()
+            if let Some(listener) = self.click_event.borrow_mut().as_ref() {
+                listener()
             } else {
                 warn!(target: "button" , "No listener for button with ID {}", self.id);
             }

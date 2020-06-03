@@ -64,7 +64,7 @@ fn build_tree() -> Tree<Section> {
 fn build_form() -> Form {
     // form tab
     let mut form = Form::new();
-    let mut button = Button::new("Test Button");
+    let button = Button::new("Test Button");
     button.set_click_event(|| {
         debug!("Clicked test button");
     });
@@ -115,7 +115,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     tabs.add_tab("Text Area", build_text_area());
 
     // create tree
-    let mut tree = build_tree();
+    let tree = build_tree();
     tree.set_click_event(enclose!((app) move |webview, section| {
         app.send(webview, section)
     }));
