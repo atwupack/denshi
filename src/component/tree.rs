@@ -30,7 +30,7 @@ struct TreeNode<U> {
 }
 
 impl<U> TreeNode<U> {
-    /// cCreate a new tree node
+    /// Create a new tree node
     fn new(caption: impl Into<String>, user_object: U, has_children: bool) -> Self {
         TreeNode {
             id: create_id(),

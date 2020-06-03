@@ -30,6 +30,7 @@ const METRO_CSS: &str = include_str!("www/css/metro-all.css");
 #[cfg(not(debug_assertions))]
 const METRO_CSS: &str = include_str!("www/css/metro-all.min.css");
 
+/// The main application
 #[derive(Clone)]
 pub struct App {
     title: String,
@@ -37,6 +38,7 @@ pub struct App {
     event_broker: Rc<RefCell<EventBroker>>,
 }
 
+/// Errors to be returned from app functions
 #[derive(Debug)]
 pub enum AppError {
     NoAppContentError,
@@ -50,6 +52,7 @@ impl fmt::Display for AppError {
 }
 
 impl App {
+    /// Create a new application with a given title.
     pub fn new(title: impl Into<String>) -> Self {
         App {
             title: title.into(),
@@ -58,14 +61,17 @@ impl App {
         }
     }
 
+    /// Set the main content of the app.
     pub fn set_content(&self, content: impl Component + 'static) {
         self.content.borrow_mut().replace(Box::new(content));
     }
 
+    /// Send an event to all components of the app.
     pub fn send<E: Any>(&self, webview: &mut WebView<()>, event: &E) {
         self.event_broker.borrow().send(webview, event)
     }
 
+    /// Subscribe to an event.
     pub fn subscribe<F: Fn(&mut WebView<()>, &E) + 'static, E: Any>(&self, listener: F) {
         self.event_broker.borrow_mut().subscribe(listener)
     }

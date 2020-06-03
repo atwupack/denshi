@@ -1,4 +1,3 @@
-use crate::component::Component;
 use nanoid::nanoid;
 
 /// Create a new id for a component.
@@ -18,29 +17,3 @@ pub fn create_div(content: &str) -> String {
         content = content
     )
 }
-
-pub fn render_components(content: &mut Vec<Box<dyn Component>>) -> String {
-    let mut result = "".to_string();
-    for comp in content {
-        result.push_str(comp.render().as_str());
-    }
-    result
-}
-
-enum Attribute {
-
-}
-
-pub struct AttributeBuilder {
-
-}
-
-impl AttributeBuilder {
-    pub fn new() -> Self {
-        AttributeBuilder {
-
-        }
-    }
-}
-
-
