@@ -45,15 +45,21 @@ impl<K: Eq + Hash + Clone> ComponentManager<K> {
     }
 
     pub fn render_component(&mut self, key: &K) -> String {
+        self.render_component_with(key, |comp_str| {
+            comp_str.into()
+        })
+    }
+
+    pub fn render_component_with(&mut self, key: &K, f: impl Fn(&str)->String ) -> String {
         let comp_vec = self.components.get_mut(key);
         if comp_vec.is_none() {
             return "".into();
         }
-        let mut comp_str = String::new();
+        let mut all_comp_str = String::new();
         for comp in comp_vec.unwrap() {
-            comp_str.push_str(comp.render().as_str())
+            all_comp_str.push_str( f(&comp.render()).as_str())
         }
-        comp_str
+        all_comp_str
     }
 
     pub fn notify_all_components(&mut self, webview: &mut WebView<()>, event: &Event) {

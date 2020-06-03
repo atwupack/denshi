@@ -19,11 +19,14 @@ pub struct Splitter {
     state: Rc<RefCell<SplitterState>>,
 }
 
-enum
+#[derive(Eq, PartialEq, Hash, Clone)]
+enum SplitterPosition {
+    First,
+    Second,
+}
 
 struct SplitterState {
-    first: Box<dyn Component>,
-    second: Box<dyn Component>,
+    comps: ComponentManager<SplitterPosition>,
     gutter_size: u8,
 }
 
@@ -33,14 +36,15 @@ impl Splitter {
         first: impl Component + 'static,
         second: impl Component + 'static,
     ) -> Splitter {
+        let mut comps = ComponentManager::new();
+        comps.set_component(SplitterPosition::First, first);
+        comps.set_component(SplitterPosition::Second, second);
         Splitter {
             id: create_id(),
             orientation,
             state: Rc::new(RefCell::new(SplitterState {
                 gutter_size: 4,
-                first: Box::new(first),
-                second: Box::new(second),
-
+                comps,
             })),
         }
     }
@@ -65,16 +69,15 @@ impl Component for Splitter {
                       <div>{second}</div>
                    </div>"#,
             id = self.id,
-            first = state.first.render(),
-            second = state.second.render(),
+            first = state.comps.render_component(&SplitterPosition::First),
+            second = state.comps.render_component(&SplitterPosition::Second),
             split_mode = split_mode,
             gutter = state.gutter_size,
         )
     }
 
     fn handle_event(&mut self, webview: &mut WebView<()>, event: &Event) {
-        self.state.borrow_mut().first.handle_event(webview, event);
-        self.state.borrow_mut().second.handle_event(webview, event);
+        self.state.borrow_mut().comps.notify_all_components(webview, event);
     }
 
     fn id(&self) -> String {
@@ -131,20 +134,15 @@ impl Component for Page {
 
         let mut state = self.state.borrow_mut();
 
-        components.push_str(&format!(
-            "<header>{header}</header>",
-            header = state.comps.render_component(&PagePosition::Header)
-        ));
-
-        components.push_str(&format!(
-            "<div class=\"h-100\">{content}</div>",
-            content = state.comps.render_component(&PagePosition::Content)
-        ));
-
-        components.push_str(&format!(
-            "<footer>{footer}</footer>",
-            footer = state.comps.render_component(&PagePosition::Footer)
-        ));
+        components.push_str(&state.comps.render_component_with(&PagePosition::Header, |comp_str| {
+            format!("<header>{header}</header>", header = comp_str)
+        }));
+        components.push_str(&state.comps.render_component_with(&PagePosition::Content, |comp_str| {
+            format!("<div class=\"h-100\">{content}</div>", content = comp_str)
+        }));
+        components.push_str(&state.comps.render_component_with(&PagePosition::Footer, |comp_str| {
+            format!("<footer>{footer}</footer>", footer = comp_str)
+        }));
 
         components.push_str("</div>");
         components
@@ -170,7 +168,7 @@ pub struct Form {
 }
 
 struct FormState {
-    components: Vec<Box<dyn Component>>,
+    comps: ComponentManager<()>,
 }
 
 impl Form {
@@ -178,28 +176,25 @@ impl Form {
         Form {
             id: create_id(),
             state: Rc::new(RefCell::new(FormState {
-                components: Vec::new(),
+                comps: ComponentManager::new(),
             })),
         }
     }
 
     pub fn add_line(&mut self, component: impl Component + 'static) {
-        self.state.borrow_mut().components.push(Box::new(component));
+        self.state.borrow_mut().comps.add_component((), component)
     }
 
     fn render_lines(&mut self) -> String {
         let mut lines = String::new();
         let mut state = self.state.borrow_mut();
 
-        for comp in &mut state.components {
-            lines.push_str(
-                format!(
-                    "<div class=\"form-group\">{line}</div>",
-                    line = comp.render()
-                )
-                .as_str(),
-            );
-        }
+        lines.push_str(&state.comps.render_component_with(&(), |comp_str| {
+            format!(
+                "<div class=\"form-group\">{line}</div>",
+                line = comp_str
+            )
+        }));
         lines
     }
 }
@@ -215,9 +210,7 @@ impl Component for Form {
     }
 
     fn handle_event(&mut self, webview: &mut WebView<()>, event: &Event) {
-        for comp in &mut self.state.borrow_mut().components {
-            comp.handle_event(webview, event);
-        }
+        self.state.borrow_mut().comps.notify_all_components(webview, event);
     }
 
     fn id(&self) -> String {
