@@ -5,6 +5,8 @@ use web_view::WebView;
 use log::debug;
 use std::rc::Rc;
 use std::cell::RefCell;
+use crate::frp::Behavior;
+use enclose::enclose;
 
 /// A text area containing multi line text.
 #[derive(Clone)]
@@ -26,6 +28,13 @@ impl TextArea {
             })),
         }
     }
+
+    pub fn text(&self) -> Behavior<String> {
+        Behavior::from_fn(enclose!((self => sclone) move || {
+            sclone.state.borrow().text.clone()
+        }))
+    }
+
 }
 
 impl Component for TextArea {
@@ -106,6 +115,12 @@ impl TextField {
             })),
             text_type,
         }
+    }
+
+    pub fn text(&self) -> Behavior<String> {
+        Behavior::from_fn(enclose!((self => sclone) move || {
+            sclone.state.borrow().text.clone()
+        }))
     }
 }
 

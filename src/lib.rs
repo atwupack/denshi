@@ -20,6 +20,7 @@ pub mod component;
 pub mod event;
 pub mod icons;
 pub mod utils;
+pub mod frp;
 
 #[cfg(debug_assertions)]
 const METRO_JS: &str = include_str!("www/js/metro.js");

@@ -32,6 +32,7 @@ impl Button {
     pub fn set_click_event(&self, event: impl Fn() + 'static) {
         self.click_event.borrow_mut().replace(Box::new(event));
     }
+
 }
 
 impl Component for Button {

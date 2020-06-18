@@ -21,6 +21,7 @@ tiny_http = { version = "0.7", optional = true }
 nanoid = "0.3"
 log = { version = "0.4", features = ["max_level_debug", "release_max_level_info"] }
 port_check = { version = "0.1", optional = true }
+enclose = "1.1"
 
 [dev-dependencies]
 systemstat = "0.1"
