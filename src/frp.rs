@@ -1,4 +1,5 @@
 use std::rc::Rc;
+use std::cell::RefCell;
 
 #[derive(Clone)]
 pub struct Behavior<T> {
@@ -19,13 +20,31 @@ impl<T> Behavior<T> {
 
 #[derive(Clone)]
 pub struct Event<T> {
-    callback: Rc<dyn Fn(T)>,
+    callbacks: Rc<  dyn Fn(T)>,
 }
 
 pub struct Sink<T> {
-    callback: Rc<dyn Fn(T)>,
+    callbacks: Rc<RefCell<Vec<Box<dyn Fn(&T)>>>>,
 }
 
 impl<T> Sink<T> {
-    
+
+    pub fn new() -> Self {
+        Sink {
+            callbacks: Default::default(),
+        }
+    }
+
+    pub fn from_fn(f: impl Fn(&T) + 'static) -> Self {
+        Sink {
+
+        }
+    }
+
+    fn send(&self, value: &T) {
+        let cbs = self.callbacks.borrow();
+        for cb in &*cbs {
+            cb(value);
+        }
+    }
 }
