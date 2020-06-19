@@ -234,7 +234,7 @@ impl TabPane {
     pub fn new() -> Self {
         TabPane {
             id: create_id(),
-            tabs: Rc::new(RefCell::new(Vec::new())),
+            tabs: Default::default(),
         }
     }
 

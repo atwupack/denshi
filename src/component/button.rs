@@ -25,7 +25,7 @@ impl Button {
             state: Rc::new(RefCell::new(ButtonState {
                 label: label.into(),
             })) ,
-            click_event: Rc::new(RefCell::new(None)),
+            click_event: Default::default(),
         }
     }
 

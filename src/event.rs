@@ -26,7 +26,7 @@ pub struct EventBroker {
 impl EventBroker {
     pub fn new() -> Self {
         EventBroker {
-            listeners: HashMap::new(),
+            listeners: Default::default(),
         }
     }
 
