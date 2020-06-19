@@ -37,7 +37,7 @@ impl<T> Sink<T> {
 
     pub fn from_fn(f: impl Fn(&T) + 'static) -> Self {
         Sink {
-
+            callbacks: Default::default(),
         }
     }
 
