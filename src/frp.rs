@@ -20,31 +20,48 @@ impl<T> Behavior<T> {
 
 #[derive(Clone)]
 pub struct Event<T> {
-    callbacks: Rc<  dyn Fn(T)>,
+    cbs: Rc<RefCell<Vec<Box< dyn Fn(&T)>>>>,
 }
 
+impl<E: 'static> Event<E> {
+    pub fn new() -> Self {
+        Event {
+            cbs: Default::default(),
+        }
+    }
+
+    pub fn new_with_sink() -> (Self, Sink<E>) {
+        let event = Event::new();
+        let sink = Sink::from_fn(|e| {
+            event.send(e)
+        });
+        (event, sink)
+    }
+
+    fn observe(&self, f: impl Fn(&E) + 'static) {
+        self.cbs.borrow_mut().push(Box::new(f))
+    }
+
+    fn send(&self, event: &E) {
+        for cb in &*self.cbs.borrow() {
+            cb(event)
+        }
+    }
+}
+
+#[derive(Clone)]
 pub struct Sink<T> {
-    callbacks: Rc<RefCell<Vec<Box<dyn Fn(&T)>>>>,
+    call: Rc<dyn Fn(&T)>,
 }
 
 impl<T> Sink<T> {
-
-    pub fn new() -> Self {
-        Sink {
-            callbacks: Default::default(),
-        }
-    }
-
     pub fn from_fn(f: impl Fn(&T) + 'static) -> Self {
         Sink {
-            callbacks: Default::default(),
+            call: Rc::new(f),
         }
     }
 
-    fn send(&self, value: &T) {
-        let cbs = self.callbacks.borrow();
-        for cb in &*cbs {
-            cb(value);
-        }
+    pub fn send(&self, value: &T) {
+        (self.call)(value)
     }
 }
